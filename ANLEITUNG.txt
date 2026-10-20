@@ -1,0 +1,215 @@
+Schussbuch 4.5.23 – Jahresnachweis und Behördendokument
+
+INSTALLATION
+ZIP entpacken. Den Inhalt mit index.html, authority.js, expenses.js, vendor, icons,
+manifest.webmanifest, sw.js und vercel.json im bestehenden Vercel-Projekt
+als neue Version bereitstellen. Kein neues Supabase-Projekt erforderlich.
+Der private Supabase-Speicher sports-certificates wurde im bestehenden
+Schussbuch-Projekt eingerichtet; keine manuelle SQL-Ausführung nötig.
+Nach Deployment App einmal schließen und neu öffnen bzw. neu laden.
+
+BEDIENUNG
+1. Im Profil Namen, WBK-Nummer und gewünschte weitere Angaben speichern.
+2. Den Reiter Behördendokument öffnen und das Kalenderjahr wählen.
+3. Den zu diesem Jahr passenden Sportschützennachweis als PDF auswählen
+   und Nachweis hochladen / ersetzen antippen (max. 10 MB).
+4. Behördendokument erstellen antippen. Das PDF herunterladen.
+   Auf dem iPhone bei Bedarf den eingeblendeten Downloadlink verwenden
+   und über Teilen in Dateien sichern.
+
+Das PDF enthält in dieser Reihenfolge:
+1. Deckblatt: Trainings- und Wettkampfnachweis, gewähltes Jahr, Name,
+   WBK-Nummer aus dem eigenen Profil sowie Jahressummen.
+2. Alle Seiten des hochgeladenen Sportschützennachweises, unverändert.
+3. Trainings und Wettkämpfe des Jahres als Tabelle wie im Schussbuch:
+   Datum | Typ | Waffe | Kaliber | Schuss | Ort / Match | Ergebnis.
+   Die neuesten Einträge stehen zuerst. In Ort / Match erscheint der Titel,
+   ersatzweise der Ort, wie beim bisherigen Schussbuch-Ausdruck.
+   Spaltenüberschriften werden auf jeder Tabellenseite wiederholt;
+   lange Inhalte werden umgebrochen. Normale Zeilen bleiben zusammen.
+   Disziplin, Division und Notizen bleiben in der App gespeichert,
+   sind jedoch nicht Teil dieser kompakten Schussbuch-Tabelle.
+Name und WBK-Nummer müssen im Profil gespeichert sein, bevor das
+Behördendokument erzeugt werden kann. Es sind keine persönlichen
+Profildaten fest im Programm hinterlegt.
+Es erfolgt keine automatische inhaltliche Prüfung der Jahreszuordnung.
+Pro Jahr und Benutzer liegt genau eine PDF im privaten Cloud-Speicher.
+Ersetzen erfordert eine Bestätigung. Andere Jahresnachweise bleiben erhalten.
+Die Nachweise sind nicht Teil des bisherigen JSON-Backups. Über Nachweis
+herunterladen lassen sie sich separat sichern.
+Für den Export ist eine Internetverbindung erforderlich. Ausstehende
+Offline-Einträge des gewählten Jahres zuerst unter Daten & Sync synchronisieren.
+Der beigefügte persönliche Nachweis wurde nicht in den öffentlichen
+App-Code eingebaut und muss nach dem Update einmal für 2026 hochgeladen werden.
+
+VALIDIERUNG 4.5.14
+PDF-Erzeugung mit 20 Jahreseinträgen entsprechend der Layoutvorlage geprüft.
+Deckblatt, Tabellen und Folgeseiten gerendert und visuell kontrolliert.
+Jahresfilter, Reihenfolge, leeres Jahr, lange Texte, 0-%-Ergebnis,
+501 Einträge ohne Verlust oder Duplikate und Seitenränder geprüft.
+Ein mehrseitiger Testnachweis mit unterschiedlichen Seitengrößen wurde
+unverändert übernommen und nach dem Rendern bildgleich verglichen.
+JavaScript-Syntax geprüft. Kein angemeldeter Live-Test und kein Deployment
+in dieser Version; diese ZIP ist für das bestehende Vercel-Projekt vorbereitet.
+
+NEU IN 4.5.14
+Persönliches Deckblatt und Schussbuch-Tabelle im Behördendokument.
+Die Kaliberauswahl aus 4.5.13 bleibt erhalten.
+
+NEU IN 4.5.13
+Im Reiter Eintrag gibt es eine Kaliberauswahl: 9x19, .38 Special, .357 Mag,
+.22 und .45 ACP. Bei Waffenwahl wird das Waffen-Kaliber vorbelegt. Die
+Auswahl wird im Training/Wettkampf gespeichert (auch offline). Beim
+Bearbeiten bleiben bisherige Kaliber erhalten, auch außerhalb der Liste.
+Die Kaliberangabe in den Waffen-Stammdaten bleibt unverändert.
+
+NEU IN 4.5.15
+Im Reiter Eintrag bietet Titel / Match ein Dropdown mit:
+IPSC Training, Präzision Training, Ordonnanz Training, PPC 1500 Training
+und Langwaffe Training. Eine Auswahl übernimmt den Titel in das Textfeld.
+Das Textfeld bleibt immer frei editierbar, auch für eigene Wettkampfnamen.
+Eigener Titel / Wettkampf setzt den Fokus ins Textfeld, ohne vorhandenen
+Text zu löschen. Beim Bearbeiten bleiben bestehende Titel erhalten.
+Speicherung, Offline-Einträge, Import und PDF-Ausgabe verwenden weiterhin
+das gleiche Titelfeld. Das Behördendokument aus 4.5.14 bleibt erhalten.
+
+NEU IN 4.5.16
+Bei Auswahl des Typs Wettkampf öffnet sich das Startgeld-Fenster.
+Euro-Beträge mit Komma oder Punkt und maximal zwei Nachkommastellen
+werden akzeptiert. 0 bedeutet kostenfrei, leer bedeutet nicht erfasst.
+Über Startgeld ändern lässt sich der Betrag vor dem Speichern anpassen.
+Bei bestehenden Wettkämpfen: Buch > Bearbeiten > Startgeld erfassen.
+Das Startgeld wird pro Eintrag gespeichert. Bei mehreren Einträgen für
+denselben Wettkampf den Betrag nur einmal erfassen, bei den übrigen 0.
+Bei Typ Training wird kein Startgeld gespeichert oder berechnet.
+
+Die Analyse zeigt Munitionskosten, Startgelder und Gesamtkosten sowie
+monatliche Diagramme. Jahres- und Typfilter gelten für alle Kosten.
+Fehlende Startgelder werden als Hinweis angezeigt; alte Einträge
+werden nicht automatisch als kostenfrei angenommen. CSV-Export und
+JSON-Backups enthalten das neue Feld; Offline-Erfassung wird unterstützt.
+Der Excel-Import verwendet weiterhin die bisherige Vorlage; Startgelder
+können nach dem Import über Bearbeiten ergänzt werden.
+
+Das Feld entry_fee wurde im bestehenden Supabase-Projekt ergänzt.
+Keine manuelle SQL-Ausführung nötig. Bestehende Daten und Zugriffsregeln
+bleiben erhalten. Dieses ZIP enthält beide Updates (Titel und Startgeld).
+
+VALIDIERUNG 4.5.16
+Funktionstest mit simulierter Oberfläche und Datenbank: alle Titelvorlagen,
+freie Eingabe, Startgeld-Dialog, Betragsprüfung, Abbrechen, Speichern,
+Bearbeiten, Nullbetrag/leeres Feld, Typwechsel, Zurücksetzen, Offline-
+Warteschlange und Synchronisierung, Jahres-/Typfilter, Monatskosten
+sowie CSV- und JSON-Export geprüft. Neues Datenbankfeld, Wertebereich
+und aktive Benutzer-Zugriffsregeln im bestehenden Projekt verifiziert.
+JavaScript-Syntax geprüft. Kein vollständiger Browser-/iPhone-Test;
+Browserinstallation war in der Testumgebung nicht verfügbar.
+Noch nicht auf Vercel veröffentlicht.
+
+NEU IN 4.5.17 - KOSTEN & BELEGE
+Eigener Bereich mit allen Jahren: Waffenkauf, Zubehör, Umbau/Bearbeitung,
+Reparatur, Wartung und Sonstiges. Ein Kaufpreis je Waffe, beliebig viele
+weitere datierte Einträge mit Titel, Preis und Beschreibung. Einträge
+können bearbeitet und nach Bestätigung gelöscht werden.
+
+Buchwertübersicht: je Waffe und insgesamt Kaufpreis plus Zubehör/Arbeiten.
+Dieser rechnerische Anschaffungs-/Ausgabenwert enthält keine Abschreibung
+und ist keine Marktwertbewertung. Munition und Startgelder werden separat
+aus allen synchronisierten Schussbucheinträgen hinzugezählt. Hobbykosten
+sind die Summe aller erfassten Ausgaben. Fehlende Kaufpreise und Startgelder
+werden angezeigt; unbekannte Ausgaben werden nicht geschätzt.
+
+Je Waffe ein privates Foto (JPG/PNG/WebP, max. 10 MB), ersetzbar und löschbar.
+Die Waffenkarte zeigt Foto, Stammdaten, Seriennummer, Schussbelastung,
+Notizen, Kaufpreis, Zubehörkosten, Buchwert und Hobbykosten.
+Historie & Belege öffnet die Einträge dieser Waffe.
+
+Pro Kosteneintrag mehrere Belege (PDF/JPG/PNG/WebP/HEIC/HEIF, je max. 10 MB).
+Nach dem Speichern: Historie > Belege anzeigen > Herunterladen. Auf dem
+iPhone bei Bedarf den eingeblendeten Link antippen und In Dateien sichern.
+Zusätzliche Belege über Bearbeiten hinzufügen. Bei einem Teilfehler ist
+der Eintrag bereits gespeichert; nur fehlgeschlagene Dateien neu auswählen.
+Löschen eines Kosteneintrags entfernt nach Bestätigung auch dessen Belege.
+
+Kosten und Bilder/Belege werden privat in Supabase gespeichert und sind
+nach Anmeldung auf anderen Geräten abrufbar. Für diesen Bereich ist eine
+Internetverbindung erforderlich. Vor der Gesamtauswertung Offline-Einträge
+im Bereich Daten & Sync synchronisieren. Die vorhandenen Schussbuch-
+JSON-/CSV-Exporte enthalten diesen separaten Kostenbereich und Dateien
+nicht; Belege können einzeln heruntergeladen werden.
+
+Neue Tabelle firearm_expenses, private Speicher firearm-receipts und
+firearm-photos sowie Fotoverweis im bestehenden Supabase-Projekt sind
+eingerichtet. Keine manuelle SQL-Ausführung nötig.
+ZIP vollständig im bestehenden Vercel-Projekt bereitstellen; expenses.js
+ist neu erforderlich. Vorherige Funktionen sind enthalten.
+
+VALIDIERUNG 4.5.17
+Buchwerte, Hobby-Gesamtkosten, fehlende Angaben, 501 Einträge über mehrere
+Datenseiten, Anlegen/Bearbeiten/Löschen, doppelter Kaufpreis, Belegdownload,
+Upload-Teilfehler mit erneutem Versuch, Foto ersetzen und Benutzerwechsel
+mit simulierter Oberfläche und Datenbank geprüft. Regression für Titel,
+Startgelder, Jahresanalyse und Offline-Synchronisierung bestanden.
+In Supabase echte transaktionale Prüfung: eigener Eintrag les-/änderbar,
+negative Kosten abgewiesen, fremder Benutzer ohne Lese-/Schreibzugriff.
+Testdaten vollständig zurückgerollt. Private Buckets und Dateizugriffsregeln
+verifiziert. Kein vollständiger Browser-/iPhone-Test.
+
+
+NEU IN 4.5.18 – HISTORIE UND WAFFENARCHIV
+Waffenstatus: Im Bestand / Verkauft / Leihwaffe. Standardansicht zeigt den
+aktuellen Bestand, das Archiv bleibt über den Filter vollständig erreichbar.
+Neue Einträge bieten eigene Waffen an; archivierte Waffen bleiben bei der
+Bearbeitung ihrer historischen Einträge auswählbar. Historische Disziplinen
+und Kaliber bleiben erhalten. Unterschiedliche Disziplinen/Divisionen am
+selben Tag werden beim Excel-Import nicht als Dubletten verworfen.
+Das Schussbuch lädt auch mehr als 1.000 Einträge vollständig.
+Bestandsbuchwert zählt ausschließlich aktuell eigene Waffen. Historische
+Ausgaben bleiben in den Hobbykosten aller Jahre enthalten. Verkaufserlöse
+werden nicht automatisch angenommen oder gegengerechnet.
+Die ZIP enthält ausschließlich App-Dateien, keine persönlichen Importdaten.
+
+Historische Munitionspreise können im einzelnen Training/Wettkampf bearbeitet
+werden. Notizen zeigen Annahmen und offene Datenprüfungen. Reinigungsverläufe
+stehen bei der jeweiligen Waffe. CSV exportiert mehrzeilige Notizen korrekt
+und enthält die Disziplin. JSON sichert auch Waffenstatus und Reinigungen;
+Fotos/Belege selbst sind nicht in diesem JSON enthalten.
+
+VALIDIERUNG 4.5.18
+Funktionsprüfungen: Archivbearbeitung, eigene und historische Preise,
+mehrere Disziplinen pro Tag, Import-Dubletten und paginiertes Laden mit
+1.203 Einträgen. Bestehende Startgeld-, Kosten-, Foto- und Belegtests
+erfolgreich. Datenimport mit Transaktionsprüfung, Schuss-/Kostenabgleich
+und Prüfung der unveränderten bestehenden Trainingseinträge.
+Ein visueller Browsertest war in dieser Umgebung nicht verfügbar.
+
+
+NEU IN 4.5.22 – NUR AKTUELLER BESTAND
+Waffenübersicht, Waffenfotos, Kosten-Auswahl und Excel-Dropdown zeigen
+ausschließlich Waffen mit Status „Im Bestand“. Archivfilter entfallen.
+Auch der Reiter für einen neuen Trainingseintrag setzt eine zuvor bearbeitete
+historische Auswahl zurück. Verkaufte und geliehene Waffen sind dort nicht
+auswählbar. Beim Bearbeiten eines alten Schussbucheintrags bleibt dessen
+ursprüngliche Waffe erhalten. Historische Einträge und Nachweise bleiben
+vollständig erhalten. Analyse und Hobbykosten behalten alle historischen
+Beträge bei; frühere Waffen werden nur als Sammelposition zusammengefasst.
+Diese Änderung ersetzt die Archivansicht aus Version 4.5.18.
+
+Analyse: Unter Zeitraum ist „Alle Jahre · gesamter Zeitraum“ verfügbar.
+Kennzahlen und Kosten summieren dann alle Jahre; der Typfilter bleibt aktiv.
+Die Monatsdiagramme summieren Januar bis Dezember jeweils über alle Jahre.
+Nach Bereitstellung App neu laden und Version 4.5.22 oben kontrollieren.
+
+Updates: Die App prüft beim Öffnen, bei Rückkehr und alle fünf Minuten online auf eine neue Version. Über „Neue Version laden“ wird sie neu geladen. Vorher Eingaben speichern. Immer dieselbe Produktionsadresse verwenden, keine einzelne Deployment-Vorschau.
+
+Waffen verkaufen: Im Bereich Waffen bei der betreffenden Waffe „Als verkauft markieren“ wählen und bestätigen. Die rote Zahl auf Home zählt verkaufte Waffen (Leihwaffen werden nicht mitgezählt). Historische Einträge und Kosten bleiben erhalten.
+
+Trainings und Wettkämpfe: Home und Analyse zeigen zusätzlich die Anzahl IPSC und Präzision. IPSC umfasst alle IPSC-Disziplinen inklusive PCC; Präzision umfasst in dieser Übersicht auf Wunsch sämtliche übrigen Disziplinen. Die Analyse berücksichtigt den gewählten Zeitraum und Typ. Die ursprünglichen Disziplinen bleiben unverändert.
+
+
+NEU IN 4.5.23 – FOTOS IN DER BUCHWERTÜBERSICHT
+Unter Kosten & Belege wird das bereits hinterlegte Waffenfoto auch direkt
+über dem Waffennamen in der Buchwertübersicht angezeigt. Ohne Foto erscheint
+ein dezenter Platzhalter. Fotos weiterhin unter Meine Waffen im Bild hochladen
+oder ersetzen; die Übersicht wird dabei automatisch aktualisiert.
+Nach Bereitstellung App neu laden und Version 4.5.23 oben kontrollieren.

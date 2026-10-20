@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050505"><title>IPSC Schussbuch</title><link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{--bg:#050505;--card:#111;--card2:#171717;--line:#2b2b2b;--txt:#f5f5f5;--muted:#9ca3af;--gold:#f2b705;--red:#d92d20}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+.wrap{max-width:900px;margin:auto;padding:14px 14px 44px}.brand{display:flex;align-items:center;gap:12px;margin:8px 0 14px}.mark{width:54px;height:54px;border:2px solid var(--gold);border-radius:12px;display:grid;place-items:center;font-weight:900;color:var(--gold);font-size:18px}h1{font-size:25px;margin:0}.sub,.small{color:var(--muted);font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin:11px 0}.nav{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;position:sticky;top:0;background:#050505e8;padding:8px 0;z-index:5;backdrop-filter:blur(10px)}button{min-height:44px;border:0;border-radius:12px;padding:10px 12px;font-weight:750;font-size:14px;cursor:pointer}.nav button{background:#171717;color:#bbb}.nav button.active,.primary{background:var(--gold)!important;color:#080808!important}.ghost{background:#1d1d1d;color:#eee;border:1px solid #333}.danger{background:#3a1111;color:#ffb4ab}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}label{display:block;font-size:12px;color:#bbb;margin:0 0 6px}input,select,textarea{width:100%;background:#090909;color:#fff;border:1px solid #343434;border-radius:11px;padding:12px;font-size:16px}textarea{min-height:80px;resize:vertical}.full{grid-column:1/-1}.hidden{display:none!important}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.kpi{background:#151515;border:1px solid #292929;border-radius:14px;padding:13px}.kpi b{font-size:23px;color:var(--gold)}.kpi span{display:block;color:#999;font-size:11px;margin-top:3px}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 7px;border-bottom:1px solid #292929;text-align:left}th{color:#999}.scroll{overflow:auto}.barrow{display:grid;grid-template-columns:140px 1fr 70px;gap:8px;align-items:center;margin:8px 0}.bar{height:12px;background:#292929;border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:var(--gold)}.msg{font-size:13px;min-height:18px;margin-top:8px;color:#ffb4ab}.ok{color:#86efac}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.login{max-width:430px;margin:8vh auto}.sectionTitle{font-size:17px;font-weight:800;margin-bottom:12px}
+.chartWrap{overflow-x:auto;padding:4px 0}.chartSvg{display:block;width:100%;min-width:620px;height:auto}.chartGrid{stroke:#303030;stroke-width:1}.chartAxis{fill:#999;font-size:11px}.chartBar{fill:var(--gold)}.chartBarCost{fill:#34d399}.chartEmpty{color:var(--muted);font-size:13px;padding:22px 0;text-align:center}.chartTotal{color:var(--gold);font-size:14px;font-weight:800;margin:-6px 0 8px}
+@media(max-width:650px){.nav{grid-template-columns:repeat(4,1fr)}.nav button{font-size:11px;padding:8px 3px}.grid,.grid3{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}.barrow{grid-template-columns:105px 1fr 55px}}
+@media print{body{background:white;color:black}.no-print,#login{display:none!important}#app{display:block!important}.view{display:none!important}#log{display:block!important}.wrap{max-width:none;padding:0}.card{background:white;color:black;border:1px solid #bbb;box-shadow:none}table{font-size:10pt}th,td{border-color:#ccc}.printhead{display:block!important}}
+.ipscLogo{width:64px;height:64px;object-fit:contain;border-radius:10px;background:#fff;padding:2px}.importSummary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}.importSummary div{background:#151515;border:1px solid #292929;border-radius:12px;padding:10px}.importSummary b{display:block;color:var(--gold);font-size:20px}.importPreview tr.error td{background:#2b1010;color:#ffb4ab}.importPreview tr.warning td{background:#2a220d;color:#fde68a}@media(max-width:650px){.importSummary{grid-template-columns:1fr 1fr}}dialog.feeDialog{width:min(440px,calc(100% - 28px));max-height:85dvh;overflow:auto;border:1px solid var(--line);border-radius:18px;padding:22px;background:var(--card);color:var(--txt)}dialog.feeDialog::backdrop{background:#000b}dialog.feeDialog h2{margin:0 0 10px;font-size:22px}.feeSummary{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:12px}.feeSummary b{color:var(--gold)}
+.expenseItem{padding:18px 0;border-bottom:1px solid var(--line)}.expenseItemHead{display:flex;justify-content:space-between;gap:14px;margin-bottom:12px}.expenseItemHead>div{min-width:0;overflow-wrap:anywhere}.expenseItemHead>b{white-space:nowrap;color:var(--gold)}.expenseNotes{white-space:pre-wrap;overflow-wrap:anywhere}.expenseReceipt{padding:12px;margin-top:10px;background:var(--card2);border-radius:10px;overflow-wrap:anywhere}.expenseReceipt .actions{margin-top:8px}.expenseKpis .kpi b{font-size:clamp(16px,2.6vw,23px);overflow-wrap:anywhere}.expenseKpis{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}.expenseGunCard{display:grid;grid-template-columns:minmax(160px,1fr) minmax(0,2fr);gap:18px;border-bottom:1px solid var(--line);padding:20px 0}.expensePhoto{aspect-ratio:4/3;background:#090909;border:1px solid var(--line);border-radius:12px;display:grid;place-items:center;overflow:hidden}.expensePhoto img{width:100%;height:100%;object-fit:contain}.expenseGunInfo h3{margin:0 0 12px}.expenseGunInfo dl{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 0 14px}.expenseGunInfo dt{color:var(--muted);font-size:13px}.expenseGunInfo dd{margin:0;overflow-wrap:anywhere}.expenseGunInfo input{font-size:14px}@media(max-width:650px){.expenseGunCard{grid-template-columns:1fr}} .sessionSplit{margin-top:10px}.kpi .sessionSplit span{color:#ddd;font-size:12px;margin-top:4px}
+.expenseOverviewPhoto{width:112px;height:84px;margin:0 0 8px;background:#090909;border:1px solid var(--line);border-radius:8px;display:grid;place-items:center;overflow:hidden}.expenseOverviewPhoto img{display:block;width:100%;height:100%;object-fit:contain}.expenseOverviewPhoto .small{font-size:11px;text-align:center;padding:6px}
+</style></head><body><div class="wrap">
+<section id="login" class="login"><div class="card"><div class="brand"><img src="icons/ipsc-logo.png" alt="IPSC Logo" class="ipscLogo"><div><h1>Schussbuch</h1><div class="sub">Training · Wettkampf · Analyse</div></div></div>
+<div class="grid"><button id="loginMode" class="primary">Anmelden</button><button id="signupMode" class="ghost">Registrieren</button></div>
+<form id="authForm" style="margin-top:14px"><label>E-Mail</label><input id="email" type="email" required><br><br><label>Passwort</label><input id="password" type="password" minlength="6" required><br><br><button id="authBtn" class="primary" style="width:100%">Anmelden</button></form><div id="authMsg" class="msg"></div></div></section>
+
+<section id="app" class="hidden"><div class="brand no-print"><img src="icons/ipsc-logo.png" alt="IPSC Logo" class="ipscLogo"><div style="flex:1"><h1>Schussbuch</h1><div id="user" class="sub"></div><div class="small">Version 4.5.23</div></div><button id="logout" class="ghost">Abmelden</button></div>
+<div class="nav no-print"><button class="tab active" data-v="dash">Home</button><button class="tab" data-v="entry">Eintrag</button><button class="tab" data-v="analysis">Analyse</button><button class="tab" data-v="log">Buch</button><button class="tab" data-v="guns">Waffen</button><button class="tab" data-v="expenses">Kosten & Belege</button><button class="tab" data-v="ranges">Schießstände</button><button class="tab" data-v="authority">Behördendokument</button><button class="tab" data-v="profile">Profil</button><button class="tab" data-v="sync">Daten & Sync</button></div>
+
+<section id="dash" class="view"><div class="kpis"><div class="kpi"><b id="kRounds">0</b><span>Schuss gesamt</span></div><div class="kpi"><b id="kTraining">0</b><span>Trainings</span><div class="sessionSplit" aria-label="Aufteilung nach Disziplin"><span id="kTrainingIPSC">IPSC: 0</span><span id="kTrainingPrecision">Präzision: 0</span></div></div><div class="kpi"><b id="kMatches">0</b><span>Wettkämpfe</span><div class="sessionSplit" aria-label="Aufteilung nach Disziplin"><span id="kMatchesIPSC">IPSC: 0</span><span id="kMatchesPrecision">Präzision: 0</span></div></div><div class="kpi" style="display:flex;gap:16px;justify-content:space-between;flex-wrap:wrap"><div><b id="kGuns">0</b><span>Waffen aktiv</span></div><div><b id="kSoldGuns" style="color:#ff6b6b">0</b><span style="color:#ff6b6b">Verkauft / inaktiv</span></div></div></div>
+<div class="card"><div class="sectionTitle">Schnelleingabe</div><p class="small">Training oder Wettkampf in wenigen Sekunden erfassen.</p><button id="newEntry" class="primary">Neuen Eintrag erfassen</button></div>
+<div class="card"><div class="sectionTitle">Letzte Aktivitäten</div><div id="recent"></div></div></section>
+
+<section id="entry" class="view hidden"><div class="card"><div id="sessionHeading" class="sectionTitle">Training / Wettkampf erfassen</div><form id="sessionForm" class="grid">
+<div><label>Datum</label><input id="sDate" type="date" required></div><div><label>Typ</label><select id="sType"><option>Training</option><option>Wettkampf</option></select></div>
+<div><label for="sTitlePreset">Titel / Match</label><select id="sTitlePreset"><option value="">Eigener Titel / Wettkampf</option><option>IPSC Training</option><option>Präzision Training</option><option>Ordonnanz Training</option><option>PPC 1500 Training</option><option>Langwaffe Training</option></select><input id="sTitle" aria-label="Titel / Match – freie Eingabe" aria-describedby="sTitleHint" placeholder="Eigenen Titel oder Wettkampf eingeben" style="margin-top:8px"><div id="sTitleHint" class="small">Training auswählen oder einen eigenen Titel eingeben. Der Text ist frei editierbar.</div></div><div><label>Schießstand</label><select id="sRange"></select></div>
+<div class="full"><label>Anderer Ort (optional)</label><input id="sLocation" placeholder="Nur ausfüllen, wenn der Ort nicht im Dropdown steht"></div>
+<div><label>Disziplin</label><select id="sDiscipline"><option>IPSC Handgun</option><option>IPSC Rifle</option><option>IPSC Shotgun</option><option>IPSC PCC</option><option>Präzision</option><option>Sonstige</option></select></div>
+<div><label>Waffe</label><select id="sGun" required></select></div><div><label for="sCaliber">Kaliber</label><select id="sCaliber" required><option value="">Kaliber wählen</option><option>9x19</option><option>.38 Special</option><option>.357 Mag</option><option>.22</option><option>.45 ACP</option></select></div><div><label>Division</label><input id="sDivision" placeholder="Production Optics"></div><div><label>Anzahl Schuss</label><input id="sRounds" type="number" min="0" max="10000" required></div>
+<input id="sEntryFee" type="hidden" value=""><div id="entryFeeBox" class="full feeSummary hidden"><div><span class="small">Startgeld</span><br><b id="entryFeeSummary">Nicht erfasst</b></div><button id="editEntryFee" class="ghost" type="button">Startgeld erfassen</button></div>
+<div><label>Match Level</label><select id="sLevel"><option value="">–</option><option>Level I</option><option>Level II</option><option>Level III</option><option>Level IV</option><option>Level V</option></select></div>
+<div><label>Platzierung</label><input id="sPlace" type="number" min="1"></div><div><label>Ergebnis %</label><input id="sPercent" type="number" min="0" step=".01"></div>
+<div><label for="sCost">Munition pro Schuss (€)</label><input id="sCost" type="number" min="0" step="0.0001" placeholder="Preis der Waffe"><div class="small">Für diesen Eintrag; historische Preise bleiben erhalten.</div></div><div class="full"><label>Notizen</label><textarea id="sNotes" placeholder="Training, Munition, Ergebnis, Erkenntnisse …"></textarea></div>
+<div class="full"><button id="sessionSubmit" class="primary">Speichern</button> <button id="sessionCancel" type="button" class="ghost hidden">Abbrechen</button><div id="saveMsg" class="msg"></div></div></form></div></section>
+
+<dialog id="entryFeeDialog" class="feeDialog no-print" aria-labelledby="entryFeeHeading" aria-describedby="entryFeeHelp"><form id="entryFeeForm"><h2 id="entryFeeHeading">Startgeld erfassen</h2><p id="entryFeeHelp" class="small">Startgeld für diesen Wettkampfeintrag. Bei mehreren Einträgen für denselben Wettkampf nur einmal erfassen.</p><label for="entryFeeAmount">Startgeld (€)</label><input id="entryFeeAmount" type="text" inputmode="decimal" autocomplete="off" placeholder="z. B. 35,00" aria-describedby="entryFeeHint entryFeeError"><p id="entryFeeHint" class="small">0 = kostenfrei. Leer lassen, wenn du den Betrag später nachtragen möchtest.</p><div id="entryFeeError" class="msg" role="alert"></div><div class="actions"><button class="primary" type="submit">Übernehmen</button><button id="entryFeeCancel" class="ghost" type="button">Abbrechen</button></div></form></dialog>
+
+<section id="analysis" class="view hidden"><div class="card"><div class="sectionTitle">Analyse</div><div class="grid"><div><label>Zeitraum</label><select id="yearFilter"></select></div><div><label>Typ</label><select id="typeFilter"><option value="">Alle</option><option>Training</option><option>Wettkampf</option></select></div></div></div>
+<div class="kpis"><div class="kpi"><b id="aRounds">0</b><span>Schuss</span></div><div class="kpi"><b id="aTrain">0</b><span>Trainings</span><div class="sessionSplit" aria-label="Aufteilung nach Disziplin"><span id="aTrainIPSC">IPSC: 0</span><span id="aTrainPrecision">Präzision: 0</span></div></div><div class="kpi"><b id="aMatch">0</b><span>Wettkämpfe</span><div class="sessionSplit" aria-label="Aufteilung nach Disziplin"><span id="aMatchIPSC">IPSC: 0</span><span id="aMatchPrecision">Präzision: 0</span></div></div><div class="kpi"><b id="aAvg">0</b><span>Ø Schuss / Termin</span></div><div class="kpi"><b id="aCost">0,00 €</b><span>Munitionskosten</span></div><div class="kpi"><b id="aEntryFees">0,00 €</b><span>Startgelder</span></div><div class="kpi"><b id="aTotalCost">0,00 €</b><span>Gesamtkosten</span></div></div><p id="aFeeNote" class="small" role="status"></p>
+<div class="card"><div class="sectionTitle">Schuss pro Monat</div><div id="monthRoundsTotal" class="chartTotal"></div><div id="monthBars" class="chartWrap"></div></div><div class="card"><div class="sectionTitle">Munitionskosten pro Monat</div><div id="monthCostTotal" class="chartTotal"></div><div id="monthCostBars" class="chartWrap"></div></div><div class="card"><div class="sectionTitle">Startgelder pro Monat</div><div id="monthFeeTotal" class="chartTotal"></div><div id="monthFeeBars" class="chartWrap"></div></div><div class="card"><div class="sectionTitle">Gesamtkosten pro Monat</div><div id="monthCombinedTotal" class="chartTotal"></div><div id="monthCombinedBars" class="chartWrap"></div><p class="small">Munitionskosten und erfasste Startgelder.</p></div><div class="card"><div class="sectionTitle">Schuss pro Waffe</div><div id="gunBars"></div></div><div class="card"><div class="sectionTitle">Munitionskosten pro Waffe</div><div id="gunCostBars"></div></div><div class="card"><div class="sectionTitle">Schuss pro Kaliber</div><div id="calBars"></div></div><div class="card"><div class="sectionTitle">Munitionskosten pro Kaliber</div><div id="calCostBars"></div></div></section>
+
+<section id="log" class="view hidden"><div class="printhead hidden"><div style="display:flex;align-items:center;gap:14px;border-bottom:2px solid #222;padding-bottom:12px;margin-bottom:12px"><img src="icons/ipsc-logo.png" alt="IPSC Logo" style="width:70px;height:70px;object-fit:contain"><div><h1>Schussbuch</h1><p style="margin:4px 0">Trainings- und Wettkampfnachweis</p></div></div><div id="printProfile" style="margin-bottom:16px"></div></div><div class="card"><div class="actions no-print"><button id="pdfBtn" class="primary">PDF A4</button><button id="csvBtn" class="ghost">Daten CSV</button><button id="jsonBtn" class="ghost">Backup JSON</button><button id="shareBtn" class="ghost">Verschicken</button></div><div class="scroll" style="margin-top:12px"><div id="logMsg" class="msg ok no-print" role="status"></div><div id="logTable"></div></div></div></section>
+
+<section id="guns" class="view hidden"><div class="card"><div class="sectionTitle">Waffe anlegen</div><form id="gunForm" class="grid"><div><label>Name</label><input id="gName" required placeholder="z. B. CZ Shadow 2"></div><div><label>Status</label><select id="gStatus"><option value="owned">Im Bestand</option><option value="sold">Verkauft</option><option value="borrowed">Leihwaffe</option></select></div><div><label>Kaliber</label><input id="gCal" required placeholder="9×19"></div><div><label>Seriennummer</label><input id="gSerial" autocomplete="off" placeholder="Seriennummer der Waffe"></div><div><label>Division</label><input id="gDiv" placeholder="Production Optics"></div><div><label>Kosten pro Schuss (€)</label><input id="gCost" type="number" min="0" step="0.0001" inputmode="decimal" placeholder="z. B. 0,28"></div><div><label>Start-Schussstand</label><input id="gStartRounds" type="number" min="0" step="1" inputmode="numeric" placeholder="z. B. 4500"><div class="small">Schüsse vor Beginn dieses digitalen Schussbuchs.</div></div><div><label>Schussstand bei letzter Reinigung</label><input id="gCleaningBaseline" type="number" min="0" step="1" inputmode="numeric" placeholder="z. B. 4300"><div class="small">Optional. Für eine korrekte Reinigungserinnerung bei gebrauchten Waffen.</div></div><div><label>Notiz</label><input id="gNotes"></div><div><label>Reinigungserinnerung</label><select id="gClean"><option value="false">Aus</option><option value="true">Aktiv</option></select></div><div><label>Intervall (Schuss)</label><input id="gInterval" type="number" min="1" value="500"></div><div class="full"><button id="gunSubmit" class="primary">Waffe speichern</button><button id="gunCancel" class="ghost hidden" type="button" style="margin-left:8px">Abbrechen</button><div id="gunEditMsg" class="msg"></div></div></form></div><div class="card"><div class="sectionTitle">Reinigung fällig</div><div id="cleaningTasks"></div></div><div class="card"><div style="display:flex;align-items:center;justify-content:space-between;gap:12px"><div class="sectionTitle" style="margin-bottom:0">Meine Waffen</div><button id="refreshGuns" class="ghost" type="button">🔄 Aktualisieren</button></div><div id="gunRefreshMsg" class="msg"></div><p class="small">Hier werden ausschließlich Waffen im aktuellen Bestand angezeigt.</p><div id="gunList"></div></div></section>
+<section id="ranges" class="view hidden"><div class="card"><div class="sectionTitle">Schießstand anlegen</div><form id="rangeForm" class="grid"><div><label>Name</label><input id="rName" required placeholder="z. B. Combat Club Dornbirn"></div><div><label>Adresse / Ort (optional)</label><input id="rAddress" placeholder="Straße, PLZ Ort"></div><div class="full"><button class="primary">Schießstand speichern</button><div id="rangeMsg" class="msg"></div></div></form></div><div class="card"><div class="sectionTitle">Meine Schießstände</div><div id="rangeList"></div></div></section>
+<section id="expenses" class="view hidden">
+<div class="card"><div class="sectionTitle">Waffen & Zubehörkosten</div><p class="small">Kaufpreise, Zubehör, Umbauten und Reparaturen mit Belegen – alle Jahre im Überblick.</p><div class="actions"><button id="expenseNew" class="primary" type="button">Neuer Kosteneintrag</button><button id="expenseRefresh" class="ghost" type="button">Aktualisieren</button></div></div>
+<div id="expenseTotals" class="kpis expenseKpis"></div><p id="expenseCompleteness" class="small"></p>
+<div class="card"><div class="sectionTitle">Buchwertübersicht je Waffe</div><div id="expenseByGun" class="scroll"></div><p class="small">Bestandsbuchwert = erfasster Kaufpreis + Zubehör und Arbeiten der aktuell eigenen Waffen, ohne Abschreibung oder Marktwertbewertung. Verkaufte Waffen und Leihwaffen haben keinen Bestandsbuchwert; ihre erfassten Ausgaben bleiben in den Hobbykosten enthalten. Munition und Startgelder stammen aus deinen synchronisierten Trainings- und Wettkampfeinträgen. Diese Beträge hier nicht noch einmal erfassen. Nicht erfasste Ausgaben sind nicht in der Summe enthalten.</p></div>
+<div class="card"><div class="sectionTitle">Meine Waffen im Bild</div><div id="expenseGunCards"></div></div>
+<div class="card"><div id="expenseFormTitle" class="sectionTitle">Kauf oder Maßnahme erfassen</div><form id="expenseForm" class="grid">
+<div><label for="expenseGun">Waffe</label><select id="expenseGun" required></select></div><div><label for="expenseDate">Kauf- / Leistungsdatum</label><input id="expenseDate" type="date" required></div>
+<div><label for="expenseCategory">Kategorie</label><select id="expenseCategory" required></select></div><div><label for="expenseAmount">Preis (€)</label><input id="expenseAmount" type="text" inputmode="decimal" required placeholder="z. B. 125,50"></div>
+<div class="full"><label for="expenseTitle">Bezeichnung</label><input id="expenseTitle" maxlength="200" required placeholder="z. B. Waffenkauf, Zubehör oder Reparatur"></div>
+<div class="full"><label for="expenseNotes">Beschreibung / durchgeführte Arbeiten</label><textarea id="expenseNotes" maxlength="10000" placeholder="Was wurde gekauft, verändert, bearbeitet oder repariert?"></textarea></div>
+<div class="full"><label for="expenseFiles">Rechnungen und Belege hinzufügen</label><input id="expenseFiles" type="file" multiple accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,.heif"><p class="small">Mehrere PDFs oder Fotos, jeweils maximal 10 MB. Die Belege werden privat zu diesem Eintrag gespeichert und können später heruntergeladen werden.</p></div>
+<div class="full actions"><button id="expenseSave" class="primary" type="submit">Eintrag speichern</button><button id="expenseCancel" class="ghost hidden" type="button">Abbrechen</button></div></form>
+<div id="expenseMsg" class="msg" role="status" aria-live="polite"></div><a id="expenseDownload" class="hidden" style="color:var(--gold);overflow-wrap:anywhere"></a></div>
+<div class="card"><div class="sectionTitle">Historie & Belege</div><label for="expenseFilter">Waffe filtern</label><select id="expenseFilter"><option value="">Alle Waffen</option></select><div id="expenseRows"></div></div>
+</section>
+<section id="authority" class="view hidden"><div class="card"><div class="sectionTitle">Behördendokument</div><p class="small">Wähle das Kalenderjahr und hinterlege den dazugehörigen Sportschützennachweis. Das PDF enthält ein Deckblatt mit deinem Namen, deiner WBK-Nummer und dem gewählten Jahr, danach den vollständigen Sportschützennachweis und alle Trainings und Wettkämpfe als Schussbuch-Tabelle.</p><label for="authorityYear">Jahr</label><input id="authorityYear" type="number" min="1900" max="2100" step="1" style="max-width:180px"><p id="proofStatus" class="small" role="status"></p><label for="proofFile">Sportschützennachweis als PDF (max. 10 MB)</label><input id="proofFile" type="file" accept="application/pdf,.pdf"><div class="actions" style="margin-top:12px"><button id="uploadProof" class="primary" type="button">Nachweis hochladen / ersetzen</button><button id="viewProof" class="ghost" type="button">Nachweis herunterladen</button><button id="deleteProof" class="danger" type="button">Nachweis löschen</button></div><p class="small">Ein Nachweis pro Jahr und Benutzer. Nur du kannst auf deine Nachweise zugreifen. Mehrseitige Nachweise werden vollständig übernommen. Die Jahreszuordnung legst du beim Upload fest.</p><button id="authorityCreate" class="primary" type="button">Behördendokument erstellen</button><div id="authorityMsg" class="msg" role="status" aria-live="polite"></div><a id="authorityDownload" class="hidden" style="color:#f2b705;overflow-wrap:anywhere"></a></div></section>
+<section id="profile" class="view hidden"><div class="card"><div class="sectionTitle">Mein Profil</div><p class="small">Diese Angaben werden für deinen persönlichen Schussbuch-Ausdruck und das Behördendokument verwendet. Name und WBK-Nummer sind für das Behördendokument erforderlich.</p><form id="profileForm" class="grid"><div><label>Name und Vorname</label><input id="pName" autocomplete="name" placeholder="Max Mustermann"></div><div><label>E-Mail</label><input id="pEmail" type="email" autocomplete="email"></div><div class="full"><label>Adresse</label><textarea id="pAddress" autocomplete="street-address" placeholder="Straße, PLZ Ort"></textarea></div><div><label>WBK-Nummer</label><input id="pWbk" autocomplete="off"></div><div class="full"><button class="primary">Profil speichern</button><div id="profileMsg" class="msg"></div></div></form></div></section>
+<section id="sync" class="view hidden">
+<div class="card"><div class="sectionTitle">📱 Daten & Synchronisierung</div>
+<p class="small">Deine Cloud-Daten werden zusätzlich als lokale Kopie auf diesem Gerät gespeichert. Schießeinträge können offline erfasst und später mit Supabase synchronisiert werden.</p>
+<div id="localStatus" class="small">Lokaler Speicher wird vorbereitet…</div>
+<div id="localCounts" class="kpis" style="margin-top:12px"></div>
+<div class="actions" style="margin-top:12px"><button id="syncNow" class="primary" type="button">↻ Jetzt synchronisieren</button><button id="localBackup" class="ghost" type="button">⬇ Lokales Backup</button><button id="restoreBackup" class="ghost" type="button">⬆ Backup lokal laden</button><input id="restoreFile" type="file" accept="application/json,.json" class="hidden"></div>
+<p class="small" style="margin-top:12px"><b>Hinweis:</b> Die Cloud bleibt deine Hauptsicherung. Das lokale Backup liegt nur auf diesem Gerät bzw. in der von dir gespeicherten JSON-Datei.</p>
+</div>
+<div class="card"><div class="sectionTitle">Excel-Massenimport</div>
+<p class="small">Lade zuerst deine persönliche Vorlage herunter. Sie enthält deine aktuell angelegten Waffen als Dropdown. Andere Waffennamen können trotzdem frei eingegeben werden und werden beim Import als neue Waffen vorgeschlagen.</p>
+<div class="actions"><button id="excelTemplate" class="primary" type="button">Excel-Vorlage herunterladen</button><button id="excelChoose" class="ghost" type="button">Ausgefüllte Excel-Datei prüfen</button><input id="excelFile" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" class="hidden"></div>
+<div id="excelMsg" class="msg"></div><div id="excelReview" class="hidden"><div id="excelSummary" class="importSummary"></div><div class="scroll"><div id="excelPreview"></div></div><div class="actions" style="margin-top:12px"><button id="excelImport" class="primary" type="button">Geprüfte Einträge importieren</button><button id="excelCancel" class="ghost" type="button">Abbrechen</button></div></div>
+</div></section>
+</section></div>
+
+<script src="vendor/jszip.min.js"></script>
+<script src="vendor/pdf-lib.min.js"></script><script src="vendor/fontkit.umd.min.js"></script>
+<script type="module">
+import {initAuthority} from "./authority.js";
+import {initExpenses} from "./expenses.js";
+import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+const sb=createClient('https://kyoowohgsqufqqnuebja.supabase.co','sb_publishable_MG2YEqlVL7W00Tve6aW34Q_m9rysbak'); let sessions=[],guns=[],cleanings=[],ranges=[],profile=null,mode='login'; const $=x=>document.getElementById(x);
+$('sDate').value=new Date().toISOString().slice(0,10);
+function view(v){document.querySelectorAll('.view').forEach(x=>x.classList.add('hidden'));$(v).classList.remove('hidden');document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.v===v));if(v==='analysis')renderAnalysis();if(v==='authority')void authority.refresh();if(v==='expenses')void expensesArea.refresh()}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{if(b.dataset.v==='entry'){if(sessionBusy)return;resetSessionForm()}view(b.dataset.v)});$('newEntry').onclick=()=>view('entry');
+$('loginMode').onclick=()=>{mode='login';$('authBtn').textContent='Anmelden'};$('signupMode').onclick=()=>{mode='signup';$('authBtn').textContent='Konto erstellen'};
+$('authForm').onsubmit=async e=>{e.preventDefault();$('authMsg').textContent='Bitte warten…';let r=mode==='login'?await sb.auth.signInWithPassword({email:$('email').value,password:$('password').value}):await sb.auth.signUp({email:$('email').value,password:$('password').value});$('authMsg').textContent=r.error?r.error.message:(r.data.session?'Erfolgreich.':'Bitte E-Mail bestätigen.')};
+$('logout').onclick=()=>sb.auth.signOut();
+let currentUserId='',loadVersion=0;
+const authority=initAuthority({sb,getUserId:()=>currentUserId,getQueue:()=>getQueue()});
+const expensesArea=initExpenses({sb,getUserId:()=>currentUserId});
+const LOCAL_BASE='schussbuch_local_v453_',QUEUE_BASE='schussbuch_queue_v453_';
+const localKey=()=>LOCAL_BASE+(currentUserId||'unknown'), queueKey=()=>QUEUE_BASE+(currentUserId||'unknown');
+sb.auth.onAuthStateChange((event,s)=>{
+  const previous=currentUserId;
+  currentUserId=s?.user?.id||'';
+  if(previous!==currentUserId){$('entryFeeDialog').close();$('sEntryFee').value='';updateEntryFeeSummary();}
+  if(previous!==currentUserId){
+    loadVersion++;authority.reset();expensesArea.reset();
+    sessions=[];guns=[];cleanings=[];ranges=[];profile=null;
+  }
+  $('login').classList.toggle('hidden',!!s);
+  $('app').classList.toggle('hidden',!s);
+  $('user').textContent=s?.user?.email||'';
+  // Never call Supabase inside the auth callback: it runs under the auth lock.
+  if(s&&(previous!==currentUserId||event==='INITIAL_SESSION')){
+    const uid=currentUserId;
+    setTimeout(()=>{if(currentUserId===uid){localLoad();void load()}},0);
+  }
+});
+function upsertById(list,row){return [row,...list.filter(x=>String(x.id)!==String(row.id))]}
+function localSave(){try{localStorage.setItem(localKey(),JSON.stringify({sessions,guns,cleanings,ranges,profile,saved_at:new Date().toISOString()}));updateLocalStatus()}catch(e){console.warn('Lokale Sicherung fehlgeschlagen',e)}}
+function localLoad(){try{let x=JSON.parse(localStorage.getItem(localKey())||'null');if(!x)return false;sessions=x.sessions||[];guns=x.guns||[];cleanings=x.cleanings||[];ranges=x.ranges||[];profile=x.profile||null;render();renderProfile();updateLocalStatus();return true}catch(e){return false}}
+function getQueue(){try{return JSON.parse(localStorage.getItem(queueKey())||'[]')}catch(e){return []}}
+function setQueue(q){localStorage.setItem(queueKey(),JSON.stringify(q));updateLocalStatus()}
+function updateLocalStatus(){let el=$('localStatus');if(!el)return;let x=null;try{x=JSON.parse(localStorage.getItem(localKey())||'null')}catch(e){};let q=getQueue();el.innerHTML=(navigator.onLine?'🟢 <b>Online</b>':'🟠 <b>Offline</b>')+' · '+(x?.saved_at?'Letzte lokale Sicherung: '+new Date(x.saved_at).toLocaleString('de-AT'):'Noch keine lokale Kopie')+(q.length?' · <b>'+q.length+' Eintrag/Einträge warten auf Sync</b>':' · ✓ Alles synchronisiert');let c=$('localCounts');if(c){let d=x||{sessions:[],guns:[],cleanings:[]};c.innerHTML=`<div class="kpi"><b>${(d.sessions||[]).length}</b><span>Einträge lokal</span></div><div class="kpi"><b>${(d.guns||[]).length}</b><span>Waffen lokal</span></div><div class="kpi"><b>${(d.cleanings||[]).length}</b><span>Reinigungen lokal</span></div><div class="kpi"><b>${q.length}</b><span>Warten auf Sync</span></div>`}}
+async function syncQueue(){
+  if(!navigator.onLine)return updateLocalStatus();
+  let q=getQueue();if(!q.length)return updateLocalStatus();
+  const {data:{user},error:userErr}=await sb.auth.getUser();
+  if(userErr||!user)return updateLocalStatus();
+  let remain=[];
+  for(let item of q){
+    if(item.type==='session'){
+      let row={...item.row,user_id:user.id};delete row._local_id;
+      let r=await sb.from('sessions').insert(row).select().single();
+      if(r.error)remain.push(item);
+      else{
+        sessions=sessions.filter(x=>x.id!==item.row._local_id);
+        sessions=upsertById(sessions,r.data).sort((a,b)=>String(b.session_date).localeCompare(String(a.session_date)));
+      }
+    }
+  }
+  setQueue(remain);localSave();render();updateLocalStatus();
+}
+const gunStatus=g=>g.ownership_status||'owned';
+const statusLabel=g=>({owned:'Im Bestand',sold:'Verkauft',borrowed:'Leihwaffe'}[gunStatus(g)]||'Im Bestand');
+async function loadAllRows(table,order,ascending=true){
+ const uid=currentUserId;let data=[];
+ try{for(let offset=0;;offset+=500){
+ const r=await sb.from(table).select('*').eq('user_id',uid).order(order,{ascending}).order('id').range(offset,offset+499);
+ if(r.error)return r;if(uid!==currentUserId)return {error:new Error('Anmeldung geändert')};
+ data.push(...(r.data||[]));if((r.data||[]).length<500)return {data,error:null};
+ }}catch(error){return {error}}
+}
+async function load(){
+  if(!currentUserId)return;
+  const myVersion=++loadVersion;
+  // Load each area independently. A problem in profile/sessions/cleanings must never hide fresh firearms.
+  let cached=null;try{cached=JSON.parse(localStorage.getItem(localKey())||'null')}catch(e){}
+  try{
+    let [a,b,c,d,e]=await Promise.all([
+      sb.from('firearms').select('*').order('name'),
+      loadAllRows('sessions','session_date',false),
+      loadAllRows('cleaning_events','cleaned_at',false),
+      sb.from('profiles').select('*').maybeSingle(),
+      sb.from('shooting_ranges').select('*').order('name')
+    ]);
+    if(myVersion!==loadVersion)return;
+    if(!a.error) guns=a.data||[]; else {console.error('Waffen laden:',a.error); guns=cached?.guns||guns}
+    if(!b.error) sessions=b.data||[]; else {console.error('Einträge laden:',b.error); sessions=cached?.sessions||sessions}
+    if(!c.error) cleanings=c.data||[]; else {console.error('Reinigungen laden:',c.error); cleanings=cached?.cleanings||cleanings}
+    if(!d.error) profile=d.data||null; else {console.error('Profil laden:',d.error); profile=cached?.profile||profile}
+    if(!e.error) ranges=e.data||[]; else {console.error('Schießstände laden:',e.error); ranges=cached?.ranges||ranges}
+    localSave();render();renderProfile();updateLocalStatus();
+    await syncQueue();
+  }catch(e){if(myVersion!==loadVersion)return;console.error('Cloud laden fehlgeschlagen',e);updateLocalStatus()}
+}
+function renderSessionBreakdown(rows,trainingId,matchId){
+ for(const [type,id] of [['Training',trainingId],['Wettkampf',matchId]]){
+  const matching=rows.filter(row=>row.session_type===type);
+  const ipsc=matching.filter(row=>/\bIPSC\b/i.test(String(row.discipline||row.title||''))).length;
+  $(id+'IPSC').textContent='IPSC: '+ipsc.toLocaleString('de-AT');
+  $(id+'Precision').textContent='Präzision: '+(matching.length-ipsc).toLocaleString('de-AT');
+ }
+}
+function render(){const selectedGun=$('sGun').value;$('kRounds').textContent=sessions.reduce((a,x)=>a+x.rounds,0).toLocaleString('de-AT');$('kTraining').textContent=sessions.filter(x=>x.session_type==='Training').length;$('kMatches').textContent=sessions.filter(x=>x.session_type==='Wettkampf').length;$('kGuns').textContent=guns.filter(g=>gunStatus(g)==='owned').length;$('kSoldGuns').textContent=guns.filter(g=>gunStatus(g)==='sold').length;
+renderSessionBreakdown(sessions,'kTraining','kMatches');renderSessionGuns(selectedGun);
+$('recent').innerHTML=sessions.filter(x=>guns.some(g=>String(g.id)===String(x.firearm_id)&&gunStatus(g)==='owned')).slice(0,5).map(x=>`<div style="padding:9px 0;border-bottom:1px solid #292929"><b>${x.session_type}</b> · ${x.session_date} · ${x.firearm_name} <span style="color:#f2b705">${x.rounds} Schuss</span></div>`).join('')||'<div class="small">Noch keine Einträge.</div>';
+$('gunList').innerHTML=guns.filter(g=>gunStatus(g)==='owned').map(g=>{let appRounds=sessions.filter(s=>s.firearm_id===g.id).reduce((a,x)=>a+Number(x.rounds||0),0),start=Number(g.starting_rounds||0),r=start+appRounds,ce=cleanings.filter(c=>c.firearm_id===g.id),baseline=Number(g.cleaning_baseline_rounds||0),last=ce.length?Math.max(baseline,...ce.map(c=>Number(c.rounds_at_cleaning||0))):baseline,since=Math.max(0,r-last);return `<div style="padding:12px 0;border-bottom:1px solid #292929"><b>${esc(g.name)}</b> · ${esc(g.caliber)} · ${statusLabel(g)}<span style="float:right;color:#f2b705"><b>${r.toLocaleString('de-AT')} Schuss gesamt</b></span><div class="small" style="margin-top:4px">${start.toLocaleString('de-AT')} Startwert + ${appRounds.toLocaleString('de-AT')} in der App</div><div class="small">${g.division||''}${g.serial_number?' · SN: '+g.serial_number:''} · Munition: ${money(g.cost_per_round||0)} / Schuss · Reinigung: ${g.cleaning_enabled?'aktiv, alle '+g.cleaning_interval+' Schuss':'aus'} · ${ce.length}× gereinigt${g.cleaning_enabled?' · '+since+' seit Reinigung':''}</div><div class="actions" style="margin-top:8px"><button class="primary" onclick="window.editGun(${g.id})">✏️ Bearbeiten</button><button class="danger" type="button" onclick="window.markGunSold(${g.id},this)">Als verkauft markieren</button><button class="ghost" onclick="window.toggleCleaning(${g.id},${!g.cleaning_enabled})">${g.cleaning_enabled?'Erinnerung aus':'Erinnerung an'}</button></div>${ce.length?`<details><summary class="small">Reinigungsverlauf (${ce.length})</summary>${ce.map(c=>`<div class="small" style="margin-top:6px">${esc(String(c.cleaned_at).slice(0,10))} · ${Number(c.rounds_at_cleaning).toLocaleString('de-AT')} Schuss${c.notes?`<div style="white-space:pre-wrap">${esc(c.notes)}</div>`:''}</div>`).join('')}</details>`:''}</div>`}).join('')||'<div class="small">Keine Waffen in dieser Auswahl.</div>';renderCleaningTasks();renderLog();renderRanges();fillYears()}
+
+function renderSessionGuns(selected=''){
+ const entry=sessions.find(s=>String(s.id)===String(editingSessionId));
+ const available=guns.filter(g=>gunStatus(g)==='owned'||String(g.id)===String(entry?.firearm_id));
+ $('sGun').innerHTML='<option value="">Waffe wählen</option>'+available.map(g=>`<option value="${g.id}">${esc(g.name)} · ${esc(g.caliber)}${gunStatus(g)==='owned'?'':' · '+statusLabel(g)}</option>`).join('');
+ if(available.some(g=>String(g.id)===String(selected)))$('sGun').value=selected;
+}
+async function refreshGuns(){
+  const btn=$('refreshGuns'),msg=$('gunRefreshMsg');
+  if(btn){btn.disabled=true;btn.textContent='🔄 Aktualisiere…'}
+  if(msg){msg.className='msg';msg.textContent=''}
+  try{
+    const r=await sb.from('firearms').select('*').order('name');
+    if(r.error) throw r.error;
+    guns=r.data||[];
+    localSave();
+    render();
+    if(msg){msg.className='msg ok';msg.textContent='Waffen aktualisiert ✓'}
+  }catch(err){
+    console.error('Waffen aktualisieren fehlgeschlagen',err);
+    if(msg){msg.className='msg';msg.textContent='Aktualisieren fehlgeschlagen: '+(err?.message||String(err))}
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='🔄 Aktualisieren'}
+  }
+}
+$('refreshGuns').onclick=refreshGuns;
+function setSessionCaliber(value,keepExact=false){
+ const select=$('sCaliber');select.querySelectorAll('[data-legacy]').forEach(o=>o.remove());
+ let caliber=String(value||'').trim();
+ if(!keepExact&&/^9\s*[x×]\s*19$/i.test(caliber))caliber='9x19';
+ if(caliber&&![...select.options].some(o=>o.value===caliber)){
+  const option=new Option(caliber+' (bisheriges Kaliber)',caliber);option.dataset.legacy='true';select.add(option);
+ }
+ select.value=caliber;
+}
+$('sGun').onchange=()=>{let g=guns.find(x=>String(x.id)===$('sGun').value);setSessionCaliber(g?.caliber);if(g){$('sDivision').value=g.division||'';$('sCost').value=String(g.cost_per_round??0)}};
+let editingGunId=null;
+function resetGunForm(){editingGunId=null;$('gunForm').reset();$('gInterval').value=500;$('gunSubmit').textContent='Waffe speichern';$('gunCancel').classList.add('hidden');$('gunEditMsg').textContent=''}
+window.editGun=id=>{let g=guns.find(x=>x.id===id);if(!g)return;editingGunId=id;$('gName').value=g.name||'';$('gStatus').value=gunStatus(g);$('gCal').value=g.caliber||'';$('gSerial').value=g.serial_number||'';$('gDiv').value=g.division||'';$('gCost').value=g.cost_per_round||'';$('gStartRounds').value=Number(g.starting_rounds||0);$('gCleaningBaseline').value=Number(g.cleaning_baseline_rounds||0);$('gNotes').value=g.notes||'';$('gClean').value=String(!!g.cleaning_enabled);$('gInterval').value=g.cleaning_interval||500;$('gunSubmit').textContent='Änderungen speichern';$('gunCancel').classList.remove('hidden');$('gunEditMsg').className='msg';$('gunEditMsg').textContent='Du bearbeitest: '+g.name;document.getElementById('guns').scrollIntoView({behavior:'smooth',block:'start'})};
+$('gunCancel').onclick=resetGunForm;
+$('gunForm').onsubmit=async e=>{e.preventDefault();
+  const msg=$('gunEditMsg'), btn=$('gunSubmit');
+  msg.className='msg'; msg.textContent='Wird gespeichert…'; btn.disabled=true;
+  try{
+    const {data:{user},error:userErr}=await sb.auth.getUser();
+    if(userErr||!user) throw new Error('Keine gültige Anmeldung. Bitte einmal abmelden und wieder anmelden.');
+    let row={user_id:user.id,name:$('gName').value.trim(),ownership_status:$('gStatus').value,caliber:$('gCal').value.trim(),division:$('gDiv').value.trim()||null,serial_number:$('gSerial').value.trim()||null,notes:$('gNotes').value.trim()||null,cleaning_enabled:$('gClean').value==='true',cleaning_interval:Number($('gInterval').value)||500,cost_per_round:Number(String($('gCost').value).replace(',','.'))||0,starting_rounds:Math.max(0,Number($('gStartRounds').value)||0),cleaning_baseline_rounds:Math.max(0,Number($('gCleaningBaseline').value)||0)};
+    let r=editingGunId
+      ? await sb.from('firearms').update(row).eq('id',editingGunId).eq('user_id',user.id).select().single()
+      : await sb.from('firearms').insert(row).select().single();
+    if(r.error) throw r.error;
+    loadVersion++;
+    // Show the confirmed Supabase row immediately, even if another app area has a loading problem.
+    if(editingGunId){guns=guns.map(g=>g.id===r.data.id?r.data:g)}else{guns=[...guns.filter(g=>g.id!==r.data.id),r.data].sort((x,y)=>(x.name||'').localeCompare(y.name||'','de'))}
+    localSave();render();
+    resetGunForm();
+    msg.className='msg ok'; msg.textContent='Waffe gespeichert ✓';
+    await refreshGuns();
+  }catch(err){
+    console.error('Waffe speichern fehlgeschlagen',err);
+    msg.className='msg'; msg.textContent='Speichern fehlgeschlagen: '+(err?.message||String(err));
+    alert('Waffe konnte nicht gespeichert werden: '+(err?.message||String(err)));
+  }finally{btn.disabled=false}
+};
+window.markGunSold=async(id,button)=>{
+ const gun=guns.find(g=>String(g.id)===String(id));
+ if(!gun||gunStatus(gun)!=='owned'||button?.disabled)return;
+ if(!navigator.onLine)return alert('Zum Ändern des Waffenstatus bitte online verbinden.');
+ if(!confirm(`„${gun.name}“ als verkauft / inaktiv markieren? Die Waffe verschwindet aus dem aktiven Bestand und der Auswahl für neue Einträge. Bisherige Schussbucheinträge und Kosten bleiben erhalten.`))return;
+ const uid=currentUserId;
+ if(button)button.disabled=true;
+ try{
+  const {data:{user},error}=await sb.auth.getUser();
+  if(error||!user||user.id!==uid||currentUserId!==uid)throw Error('Bitte erneut anmelden.');
+  const r=await sb.from('firearms').update({ownership_status:'sold'}).eq('id',id).eq('user_id',uid).select().single();
+  if(r.error)throw r.error;
+  if(currentUserId!==uid)return;
+  loadVersion++;
+  guns=guns.map(g=>String(g.id)===String(id)?r.data:g);
+  if(String(editingGunId)===String(id))resetGunForm();
+  localSave();render();
+  $('gunRefreshMsg').className='msg ok';$('gunRefreshMsg').textContent='Waffe als verkauft / inaktiv markiert ✓';
+ }catch(error){if(currentUserId===uid)alert('Status konnte nicht gespeichert werden: '+error.message)}
+ finally{if(button)button.disabled=false}
+};
+window.toggleCleaning=async(id,on)=>{let r=await sb.from('firearms').update({cleaning_enabled:on}).eq('id',id);if(r.error)alert(r.error.message);else await load()};
+window.markClean=async(id,total)=>{if(!confirm('Reinigung als erledigt markieren?'))return;let r=await sb.from('cleaning_events').insert({firearm_id:id,rounds_at_cleaning:total});if(r.error)alert(r.error.message);else await load()};
+function renderCleaningTasks(){let due=[];guns.filter(g=>gunStatus(g)==='owned'&&g.cleaning_enabled).forEach(g=>{let appRounds=sessions.filter(s=>s.firearm_id===g.id).reduce((a,x)=>a+Number(x.rounds||0),0),total=Number(g.starting_rounds||0)+appRounds,ce=cleanings.filter(c=>c.firearm_id===g.id),baseline=Number(g.cleaning_baseline_rounds||0),last=ce.length?Math.max(baseline,...ce.map(c=>Number(c.rounds_at_cleaning||0))):baseline,since=Math.max(0,total-last),interval=g.cleaning_interval||500;if(since>=interval)due.push({g,total,since,interval})});$('cleaningTasks').innerHTML=due.length?due.map(x=>`<div style="padding:12px;border:1px solid #5b4510;border-radius:12px;margin:8px 0;background:#1c1708"><b style="color:#f2b705">⚠ ${x.g.name}</b><div class="small" style="margin:5px 0">${x.since} Schuss seit letzter Reinigung · Intervall ${x.interval}</div><button class="primary" onclick="window.markClean(${x.g.id},${x.total})">✓ Reinigung erledigt</button></div>`).join(''):'<div class="small">Aktuell ist keine Reinigung fällig.</div>'}
+function renderRanges(){let selected=$('sRange').value;$('sRange').innerHTML='<option value="">– Schießstand wählen –</option>'+ranges.map(r=>`<option value="${esc(r.name)}">${esc(r.name)}</option>`).join('');if(ranges.some(r=>r.name===selected))$('sRange').value=selected;$('rangeList').innerHTML=ranges.map(r=>`<div style="padding:12px 0;border-bottom:1px solid #292929"><b>${esc(r.name)}</b>${r.address?`<div class="small">${esc(r.address)}</div>`:''}<div class="actions" style="margin-top:8px"><button class="danger" type="button" onclick="window.deleteRange('${r.id}')">Löschen</button></div></div>`).join('')||'<div class="small">Noch keine Schießstände angelegt.</div>'}
+$('rangeForm').onsubmit=async e=>{e.preventDefault();let msg=$('rangeMsg');msg.className='msg';msg.textContent='Wird gespeichert…';let {data:{user}}=await sb.auth.getUser();if(!user){msg.textContent='Nicht angemeldet.';return}let row={user_id:user.id,name:$('rName').value.trim(),address:$('rAddress').value.trim()||null};let r=await sb.from('shooting_ranges').insert(row).select().single();if(r.error){msg.textContent='Speichern fehlgeschlagen: '+(r.error.code==='23505'?'Dieser Schießstand ist bereits angelegt.':r.error.message);return}ranges=upsertById(ranges,r.data).sort((a,b)=>a.name.localeCompare(b.name,'de'));localSave();renderRanges();e.target.reset();msg.className='msg ok';msg.textContent='Schießstand gespeichert ✓'};
+window.deleteRange=async id=>{let range=ranges.find(r=>String(r.id)===String(id));if(!range||!confirm(`Schießstand „${range.name}“ wirklich löschen? Bereits gespeicherte Trainings bleiben erhalten.`))return;let r=await sb.from('shooting_ranges').delete().eq('id',id).eq('user_id',currentUserId);if(r.error)return alert('Löschen fehlgeschlagen: '+r.error.message);ranges=ranges.filter(x=>String(x.id)!==String(id));localSave();renderRanges()};
+function syncTitlePreset(){
+ const title=$('sTitle').value;
+ $('sTitlePreset').value=Array.from($('sTitlePreset').options).some(option=>option.value===title)?title:'';
+}
+$('sTitlePreset').onchange=()=>{
+ const preset=$('sTitlePreset').value;
+ if(preset)$('sTitle').value=preset;
+ else $('sTitle').focus();
+};
+$('sTitle').oninput=syncTitlePreset;
+function parseEntryFee(value){
+ const text=String(value??'').trim();
+ if(!text)return null;
+ if(!/^\d{1,10}([.,]\d{1,2})?$/.test(text))throw Error('Bitte einen positiven Betrag mit höchstens zwei Nachkommastellen eingeben, z. B. 35,00.');
+ const amount=Number(text.replace(',','.'));
+ if(!Number.isFinite(amount)||amount<0||amount>9999999999.99)throw Error('Bitte ein gültiges Startgeld eingeben.');
+ return Math.round(amount*100)/100;
+}
+function updateEntryFeeSummary(){
+ const match=$('sType').value==='Wettkampf',value=$('sEntryFee').value;
+ $('entryFeeBox').classList.toggle('hidden',!match);
+ $('entryFeeSummary').textContent=value===''?'Nicht erfasst':money(Number(value));
+ $('editEntryFee').textContent=value===''?'Startgeld erfassen':'Startgeld ändern';
+}
+function openEntryFee(){
+ if(sessionBusy||$('sType').value!=='Wettkampf')return;
+ const value=$('sEntryFee').value;
+ $('entryFeeAmount').value=value===''?'':Number(value).toFixed(2).replace('.',',');
+ $('entryFeeError').textContent='';
+ if(!$('entryFeeDialog').open)$('entryFeeDialog').showModal();
+ $('entryFeeAmount').focus();
+}
+$('sType').onchange=()=>{updateEntryFeeSummary();if($('sType').value==='Wettkampf')openEntryFee()};
+$('editEntryFee').onclick=openEntryFee;
+$('entryFeeCancel').onclick=()=>$('entryFeeDialog').close();
+$('entryFeeForm').onsubmit=e=>{
+ e.preventDefault();
+ try{const fee=parseEntryFee($('entryFeeAmount').value);$('sEntryFee').value=fee===null?'':fee.toFixed(2);updateEntryFeeSummary();$('entryFeeDialog').close()}
+ catch(error){$('entryFeeError').textContent=error.message;$('entryFeeAmount').focus()}
+};
+let editingSessionId=null,sessionBusy=false;
+const sessionFields={sDate:'session_date',sType:'session_type',sTitle:'title',sEntryFee:'entry_fee',sDiscipline:'discipline',sDivision:'division',sGun:'firearm_id',sRounds:'rounds',sLevel:'match_level',sPlace:'placement',sPercent:'result_percent',sNotes:'notes',sCost:'cost_per_round'};
+function resetSessionForm(){
+  editingSessionId=null;renderSessionGuns();$('entryFeeDialog').close();$('sessionForm').reset();$('sEntryFee').value='';updateEntryFeeSummary();setSessionCaliber('');$('sDate').value=new Date().toISOString().slice(0,10);
+  $('sessionHeading').textContent='Training / Wettkampf erfassen';$('sessionSubmit').textContent='Speichern';
+  $('sessionCancel').classList.add('hidden');$('saveMsg').textContent='';
+}
+$('sessionCancel').onclick=()=>{if(!sessionBusy){resetSessionForm();view('log')}};
+$('newEntry').onclick=()=>{if(!sessionBusy){resetSessionForm();view('entry')}};
+window.editSession=id=>{
+  if(sessionBusy)return;
+  const entry=sessions.find(x=>String(x.id)===String(id));if(!entry)return;
+  if(entry._pending)return alert('Bitte diesen Offline-Eintrag zuerst synchronisieren.');
+  resetSessionForm();editingSessionId=entry.id;renderSessionGuns(String(entry.firearm_id));
+  if(entry.discipline&&![...$('sDiscipline').options].some(o=>o.value===entry.discipline))$('sDiscipline').appendChild(new Option(entry.discipline,entry.discipline));
+  for(const [field,key] of Object.entries(sessionFields))$(field).value=entry[key]??'';
+  syncTitlePreset();updateEntryFeeSummary();
+  setSessionCaliber(entry.caliber,true);
+  const known=ranges.some(r=>r.name===entry.location);
+  $('sRange').value=known?entry.location:'';$('sLocation').value=known?'':entry.location||'';
+  $('sessionHeading').textContent='Training / Wettkampf bearbeiten';$('sessionSubmit').textContent='Änderungen speichern';
+  $('sessionCancel').classList.remove('hidden');view('entry');$('sessionHeading').scrollIntoView({behavior:'smooth',block:'center'});
+};
+$('sessionForm').onsubmit=async e=>{
+ e.preventDefault();if(sessionBusy)return;
+ const editId=editingSessionId;let uid=currentUserId,authWasReconciled=false;
+ const original=editId===null?null:sessions.find(x=>String(x.id)===String(editId));
+ let g=guns.find(x=>String(x.id)===$('sGun').value);
+ if(!g)return alert('Bitte zuerst eine Waffe auswählen.');
+ if(gunStatus(g)!=='owned'&&(!original||String(original.firearm_id)!==String(g.id))){$('saveMsg').textContent='Für neue Einträge bitte eine Waffe im aktuellen Bestand auswählen.';return}
+ if(editId!==null&&!navigator.onLine){$('saveMsg').textContent='Zum Bearbeiten bitte eine Internetverbindung herstellen. Deine Änderungen bleiben im Formular.';return}
+ let entryFee=null;try{entryFee=$('sType').value==='Wettkampf'?parseEntryFee($('sEntryFee').value):null}catch(error){$('saveMsg').textContent=error.message;return}
+ let location=$('sLocation').value.trim()||$('sRange').value||null;
+ let row={session_date:$('sDate').value,session_type:$('sType').value,entry_fee:entryFee,title:$('sTitle').value||null,location,discipline:$('sDiscipline').value,division:$('sDivision').value||null,firearm_id:g.id,firearm_name:g.name,caliber:$('sCaliber').value,rounds:Number($('sRounds').value),match_level:$('sLevel').value||null,placement:$('sPlace').value?Number($('sPlace').value):null,result_percent:$('sPercent').value?Number($('sPercent').value):null,notes:$('sNotes').value||null,cost_per_round:Number(g.cost_per_round)||0};
+ if(original&&String(original.firearm_id)===String(g.id)){row.cost_per_round=original.cost_per_round;row.firearm_name=original.firearm_name;}
+ if($('sCost').value.trim()!=='')row.cost_per_round=Number($('sCost').value.replace(',','.'));
+ if(!Number.isFinite(row.cost_per_round)||row.cost_per_round<0){$('saveMsg').textContent='Bitte einen gültigen Munitionspreis ab 0 eingeben.';return}
+ sessionBusy=true;$('sessionSubmit').disabled=true;$('sessionCancel').disabled=true;
+ $('saveMsg').className='msg';$('saveMsg').textContent='Wird gespeichert…';
+ try{
+  if(!navigator.onLine){
+   if(!uid)throw new Error('Keine gültige Anmeldung. Bitte wieder online gehen und neu anmelden.');
+   const lid='local-'+crypto.randomUUID();let q=getQueue();q.push({type:'session',row:{...row,user_id:uid,_local_id:lid}});setQueue(q);
+   sessions.unshift({...row,user_id:uid,id:lid,_pending:true});loadVersion++;localSave();render();resetSessionForm();
+   $('saveMsg').className='msg ok';$('saveMsg').textContent='Lokal gespeichert – wartet auf Synchronisierung.';return;
+  }
+  const {data:{user},error:userErr}=await sb.auth.getUser();
+  if(userErr||!user)throw new Error('Keine gültige Anmeldung. Bitte einmal abmelden und wieder anmelden.');
+  uid=user.id;
+  if(g.user_id&&String(g.user_id)!==uid)throw new Error('Die Anmeldung hat gewechselt. Bitte aktualisieren und die Waffe erneut auswählen.');
+  if(uid!==currentUserId){
+   authWasReconciled=true;currentUserId=uid;loadVersion++;
+   sessions=[];cleanings=[];ranges=[];profile=null;guns=[g];
+  }
+  const r=editId!==null
+   ?await sb.from('sessions').update(row).eq('id',editId).eq('user_id',uid).select().single()
+   :await sb.from('sessions').insert({...row,user_id:uid}).select().single();
+  if(r.error)throw r.error;if(!r.data)throw new Error('Keine Speicherbestätigung erhalten.');
+  if(uid!==currentUserId)return;
+  loadVersion++;sessions=upsertById(sessions,r.data).sort((a,b)=>String(b.session_date).localeCompare(String(a.session_date)));
+  localSave();render();resetSessionForm();
+  $('saveMsg').className='msg ok';$('saveMsg').textContent=editId!==null?'Änderungen gespeichert ✓':'Gespeichert und sichtbar ✓';
+  if(editId!==null){view('log');$('logMsg').textContent='Änderungen gespeichert ✓'}
+  if(authWasReconciled)await load();
+ }catch(err){$('saveMsg').textContent='Speichern fehlgeschlagen: '+(err.message||String(err))}
+ finally{sessionBusy=false;$('sessionSubmit').disabled=false;$('sessionCancel').disabled=false}
+};
+window.deleteSession=async id=>{let entry=sessions.find(x=>String(x.id)===String(id));if(!entry||entry._pending)return alert('Dieser Offline-Eintrag muss zuerst synchronisiert werden.');if(!confirm(`${entry.session_type} vom ${entry.session_date} mit ${entry.rounds} Schuss wirklich löschen?`))return;let r=await sb.from('sessions').delete().eq('id',id).eq('user_id',currentUserId);if(r.error)return alert('Löschen fehlgeschlagen: '+r.error.message);sessions=sessions.filter(x=>String(x.id)!==String(id));localSave();render();};
+function renderLog(){$('logTable').innerHTML=sessions.length?`<table><thead><tr><th>Datum</th><th>Typ</th><th>Waffe</th><th>Kaliber</th><th>Schuss</th><th>Ort / Match</th><th>Ergebnis</th><th class="no-print">Aktion</th></tr></thead><tbody>${sessions.map(x=>`<tr><td>${x.session_date}</td><td>${x.session_type}</td><td>${esc(x.firearm_name)}</td><td>${esc(x.caliber)}</td><td>${x.rounds}</td><td>${esc(x.title||x.location||'')}<div class="small">${esc(x.discipline||'')}${x.division?' · '+esc(x.division):''}</div>${x.notes?`<details><summary class="small">Notizen${/PRÜFEN/.test(x.notes)?' · Angabe prüfen':''}</summary><div class="small" style="white-space:pre-wrap">${esc(x.notes)}</div></details>`:''}</td><td>${x.placement?'Pl. '+x.placement:''} ${x.result_percent!=null?x.result_percent+' %':''}</td><td class="no-print"><div class="actions"><button class="ghost" type="button" onclick="window.editSession('${x.id}')">Bearbeiten</button><button class="danger" type="button" onclick="window.deleteSession('${x.id}')">Löschen</button></div></td></tr>`).join('')}</tbody></table>`:'<div class="small">Noch keine Einträge.</div>'}
+function fillYears(){
+ const select=$('yearFilter'),previous=select.value,current=new Date().getFullYear();
+ const dataYears=sessions.map(x=>Number(String(x.session_date||'').slice(0,4))).filter(Number.isFinite);
+ const oldest=Math.min(current-5,...dataYears),newest=Math.max(current,...dataYears),years=[];
+ for(let y=newest;y>=oldest;y--)years.push(String(y));
+ select.innerHTML='<option value="all">Alle Jahre · gesamter Zeitraum</option>'+years.map(y=>`<option value="${y}">${y}${Number(y)===current?' · aktuelles Jahr':Number(y)===current-1?' · Vorjahr':''}</option>`).join('');
+ select.value=previous==='all'||years.includes(previous)?previous:String(current);
+}
+
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function renderProfile(){
+ $('pName').value=profile?.full_name||'';$('pAddress').value=profile?.address||'';$('pEmail').value=profile?.email||$('user').textContent||'';$('pWbk').value=profile?.wbk_number||'';
+ $('printProfile').innerHTML=profile?`<div><b>${esc(profile.full_name||'')}</b></div><div>${esc(profile.address||'').replace(/\n/g,'<br>')}</div><div style="margin-top:5px">E-Mail: ${esc(profile.email||'')}</div><div>WBK-Nr.: <b>${esc(profile.wbk_number||'')}</b></div>`:'<div>Profil noch nicht ausgefüllt.</div>';
+}
+$('profileForm').onsubmit=async e=>{e.preventDefault();$('profileMsg').className='msg';$('profileMsg').textContent='Speichern…';let {data:{user}}=await sb.auth.getUser();if(!user){$('profileMsg').textContent='Nicht angemeldet.';return}let row={user_id:user.id,full_name:$('pName').value.trim()||null,address:$('pAddress').value.trim()||null,email:$('pEmail').value.trim()||user.email||null,wbk_number:$('pWbk').value.trim()||null,updated_at:new Date().toISOString()};let r=await sb.from('profiles').upsert(row,{onConflict:'user_id'}).select().single();if(r.error){$('profileMsg').textContent=r.error.message;return}profile=r.data;localSave();$('profileMsg').className='msg ok';$('profileMsg').textContent='Profil gespeichert ✓';renderProfile()};
+
+$('yearFilter').onchange=renderAnalysis;$('typeFilter').onchange=renderAnalysis;
+function bars(id,obj){let max=Math.max(1,...Object.values(obj));$(id).innerHTML=Object.entries(obj).sort((a,b)=>b[1]-a[1]).map(([n,v])=>`<div class="barrow"><span>${n}</span><div class="bar"><i style="width:${v/max*100}%"></i></div><b>${v.toLocaleString('de-AT')}</b></div>`).join('')||'<div class="small">Keine Daten.</div>'}
+function money(v){return Number(v||0).toLocaleString('de-AT',{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:2})}
+function costOf(x){return Number(x.rounds||0)*Number(x.cost_per_round||0)}
+function entryFeeOf(x){return x.session_type==='Wettkampf'?Math.max(0,Number(x.entry_fee)||0):0}
+function costBars(id,obj){let max=Math.max(0.01,...Object.values(obj));$(id).innerHTML=Object.entries(obj).sort((a,b)=>b[1]-a[1]).map(([n,v])=>`<div class="barrow"><span>${n}</span><div class="bar"><i style="width:${v/max*100}%"></i></div><b>${money(v)}</b></div>`).join('')||'<div class="small">Keine Daten.</div>'}
+function monthlyChart(id,values,{cost=false,label}){
+ const el=$(id),width=720,height=280,left=54,right=14,top=16,bottom=42,plotW=width-left-right,plotH=height-top-bottom;
+ const max=Math.max(...values,0),ceiling=max<=0?1:max,step=plotW/12,barW=Math.min(34,step*.62);
+ const grid=[0,.25,.5,.75,1].map(f=>{const y=top+plotH*(1-f),v=ceiling*f;return `<line class="chartGrid" x1="${left}" y1="${y}" x2="${width-right}" y2="${y}"/><text class="chartAxis" x="${left-7}" y="${y+4}" text-anchor="end">${cost?money(v).replace(/\s/g,' '):Math.round(v).toLocaleString('de-AT')}</text>`}).join('');
+ const months=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+ const barsSvg=values.map((v,i)=>{const h=v/ceiling*plotH,x=left+i*step+(step-barW)/2,y=top+plotH-h,shown=cost?money(v):Math.round(v).toLocaleString('de-AT')+' Schuss';return `<rect class="${cost?'chartBarCost':'chartBar'}" x="${x}" y="${y}" width="${barW}" height="${Math.max(0,h)}" rx="4"><title>${months[i]}: ${shown}</title></rect><text class="chartAxis" x="${x+barW/2}" y="${height-17}" text-anchor="middle">${months[i]}</text>`}).join('');
+ el.innerHTML=`<svg class="chartSvg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(label)}">${grid}${barsSvg}</svg>`;
+}
+function renderAnalysis(){
+ let y=$('yearFilter').value||String(new Date().getFullYear()),t=$('typeFilter').value;
+ const period=y==='all'?'Alle Jahre':y,chartPeriod=y==='all'?'Alle Jahre · Kalendermonate über alle Jahre summiert':y;
+ let d=sessions.filter(x=>(y==='all'||String(x.session_date||'').startsWith(y))&&(!t||x.session_type===t));
+ let rounds=d.reduce((a,x)=>a+Number(x.rounds||0),0),totalCost=d.reduce((a,x)=>a+costOf(x),0),totalFees=d.reduce((a,x)=>a+entryFeeOf(x),0);
+ const missingFees=d.filter(x=>x.session_type==='Wettkampf'&&(x.entry_fee==null||x.entry_fee==='')).length;
+ $('aEntryFees').textContent=money(totalFees);$('aTotalCost').textContent=money(totalCost+totalFees);
+ $('aFeeNote').textContent=missingFees?`${missingFees} Wettkampfeintrag/Einträge ohne erfasstes Startgeld. Die Gesamtkosten enthalten nur bereits erfasste Beträge.`:'Gesamtkosten = Munitionskosten + erfasste Startgelder.';
+ $('aRounds').textContent=rounds.toLocaleString('de-AT');$('aTrain').textContent=d.filter(x=>x.session_type==='Training').length;$('aMatch').textContent=d.filter(x=>x.session_type==='Wettkampf').length;renderSessionBreakdown(d,'aTrain','aMatch');$('aAvg').textContent=d.length?Math.round(rounds/d.length):0;$('aCost').textContent=money(totalCost);
+ let go={},co={},gc={},cc={},monthRounds=Array(12).fill(0),monthCosts=Array(12).fill(0),monthFees=Array(12).fill(0);
+ d.forEach(x=>{let c=costOf(x),r=Number(x.rounds||0),month=Math.max(0,Math.min(11,Number(String(x.session_date).slice(5,7))-1));let weapon=guns.find(g=>String(g.id)===String(x.firearm_id)),name=weapon&&gunStatus(weapon)!=='owned'?'Historische Einträge (zusammengefasst)':x.firearm_name;go[name]=(go[name]||0)+r;gc[name]=(gc[name]||0)+c;co[x.caliber]=(co[x.caliber]||0)+r;cc[x.caliber]=(cc[x.caliber]||0)+c;monthRounds[month]+=r;monthCosts[month]+=c;monthFees[month]+=entryFeeOf(x)});
+ $('monthRoundsTotal').textContent=`Gesamt ${period}: ${rounds.toLocaleString('de-AT')} Schuss`;
+ $('monthCostTotal').textContent=`Munitionskosten ${period}: ${money(totalCost)}`;
+ $('monthFeeTotal').textContent=`Startgelder ${period}: ${money(totalFees)}`;
+ $('monthCombinedTotal').textContent=`Gesamtkosten ${period}: ${money(totalCost+totalFees)}`;
+ monthlyChart('monthBars',monthRounds,{label:`Schuss pro Monat · ${chartPeriod}`});
+ monthlyChart('monthCostBars',monthCosts,{cost:true,label:`Munitionskosten pro Monat · ${chartPeriod}`});
+ monthlyChart('monthFeeBars',monthFees,{cost:true,label:`Startgelder pro Monat · ${chartPeriod}`});
+ monthlyChart('monthCombinedBars',monthCosts.map((c,i)=>c+monthFees[i]),{cost:true,label:`Gesamtkosten pro Monat · ${chartPeriod}`});
+ if(y==='all')$('monthRoundsTotal').textContent+=' · Kalendermonate über alle Jahre summiert';
+ bars('gunBars',go);costBars('gunCostBars',gc);bars('calBars',co);costBars('calCostBars',cc);
+}
+function download(name,type,text){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+const csvCell=value=>{const text=String(value??'');return /[;"\r\n]/.test(text)?'"'+text.replaceAll('"','""')+'"':text};
+$('csvBtn').onclick=()=>download('schussbuch.csv','text/csv;charset=utf-8','Datum;Typ;Waffe;Kaliber;Schuss;Kosten pro Schuss EUR;Munitionskosten EUR;Ort;Titel;Division;Level;Platz;Prozent;Notizen;Startgeld EUR;Gesamtkosten EUR;Disziplin\n'+sessions.map(x=>[x.session_date,x.session_type,x.firearm_name,x.caliber,x.rounds,Number(x.cost_per_round||0).toFixed(4),costOf(x).toFixed(2),x.location||'',x.title||'',x.division||'',x.match_level||'',x.placement??'',x.result_percent??'',x.notes||'',x.entry_fee==null||x.entry_fee===''?'':entryFeeOf(x).toFixed(2),(costOf(x)+entryFeeOf(x)).toFixed(2),x.discipline||''].map(csvCell).join(';')).join('\n'));
+$('jsonBtn').onclick=()=>download('schussbuch-backup.json','application/json',JSON.stringify({exported_at:new Date().toISOString(),guns,firearms:guns,sessions,cleanings,ranges,shooting_ranges:ranges,profile},null,2));
+$('shareBtn').onclick=async()=>{let text=`Schussbuch: ${sessions.length} Termine, ${sessions.reduce((a,x)=>a+x.rounds,0)} Schuss.`;if(navigator.share)await navigator.share({title:'IPSC Schussbuch',text});else alert('Teilen wird hier nicht unterstützt. Nutze CSV oder PDF.')};
+
+const IMPORT_HEADERS=['Datum','Typ','Waffe','Kaliber','Schuss','Ort','Titel / Match','Disziplin','Division','Match Level','Platzierung','Ergebnis %','Kosten pro Schuss EUR','Notizen'];
+let pendingExcelImport=[];
+const xml=v=>String(v??'').replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&apos;'}[c]));
+function excelColumn(index){let s='';for(let n=index+1;n;n=Math.floor((n-1)/26))s=String.fromCharCode(65+(n-1)%26)+s;return s}
+function inlineCell(ref,value,style=''){return `<c r="${ref}" t="inlineStr"${style?` s="${style}"`:''}><is><t>${xml(value)}</t></is></c>`}
+function numberCell(ref,value,style=''){return `<c r="${ref}"${style?` s="${style}"`:''}><v>${Number(value)}</v></c>`}
+function buildImportSheet(){
+ const header=IMPORT_HEADERS.map((h,i)=>inlineCell(excelColumn(i)+'1',h,'1')).join('');
+ let rows=`<row r="1" ht="30" customHeight="1">${header}</row>`;
+ for(let r=2;r<=501;r++)rows+=`<row r="${r}"><c r="A${r}" s="2"/><c r="M${r}" s="3"/></row>`;
+ const widths=[13,14,28,13,11,25,25,20,21,16,13,13,22,38].map((w,i)=>`<col min="${i+1}" max="${i+1}" width="${w}" customWidth="1"/>`).join('');
+ return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><cols>${widths}</cols><sheetData>${rows}</sheetData><autoFilter ref="A1:N501"/><dataValidations count="2"><dataValidation type="list" allowBlank="0" showErrorMessage="0" showInputMessage="1" promptTitle="Waffe" prompt="Waffe auswählen oder einen neuen Namen eingeben" sqref="C2:C501"><formula1>Waffenliste</formula1></dataValidation><dataValidation type="list" allowBlank="0" showErrorMessage="1" errorTitle="Ungültiger Typ" error="Bitte Training oder Wettkampf auswählen" sqref="B2:B501"><formula1>Typenliste</formula1></dataValidation></dataValidations><pageMargins left="0.3" right="0.3" top="0.5" bottom="0.5" header="0.2" footer="0.2"/></worksheet>`
+}
+function buildListSheet(){
+ let rows=`<row r="1">${inlineCell('A1','Waffen')}${inlineCell('B1','Kaliber')}${inlineCell('C1','Division')}${inlineCell('D1','Kosten pro Schuss EUR')}${inlineCell('F1','Typen')}</row>`;
+ const activeGuns=guns.filter(g=>gunStatus(g)==='owned');
+ const names=activeGuns.length?activeGuns:[{name:'Noch keine Waffe angelegt',caliber:'',division:'',cost_per_round:0}];
+ names.forEach((g,i)=>{let r=i+2;rows+=`<row r="${r}">${inlineCell('A'+r,g.name)}${inlineCell('B'+r,g.caliber||'')}${inlineCell('C'+r,g.division||'')}${numberCell('D'+r,Number(g.cost_per_round)||0,'3')}${i<2?inlineCell('F'+r,i===0?'Training':'Wettkampf'):''}</row>`});
+ if(names.length===1)rows+=`<row r="3">${inlineCell('F3','Wettkampf')}</row>`;
+ return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>${rows}</sheetData></worksheet>`
+}
+async function makeExcelTemplate(){
+ if(!window.JSZip)throw new Error('Excel-Funktion konnte nicht geladen werden. Bitte App neu öffnen.');
+ const z=new JSZip(),gunEnd=Math.max(2,guns.filter(g=>gunStatus(g)==='owned').length+1);
+ z.file('[Content_Types].xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/></Types>');
+ z.file('_rels/.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/></Relationships>');
+ z.file('docProps/core.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>Schussbuch Importvorlage</dc:title><dc:creator>IPSC Schussbuch</dc:creator><dcterms:created xsi:type="dcterms:W3CDTF">${new Date().toISOString()}</dcterms:created></cp:coreProperties>`);
+ z.file('docProps/app.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"><Application>IPSC Schussbuch</Application></Properties>');
+ z.file('xl/workbook.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Schussbucheinträge" sheetId="1" r:id="rId1"/><sheet name="Listen" sheetId="2" state="hidden" r:id="rId2"/></sheets><definedNames><definedName name="Waffenliste">Listen!$A$2:$A$${gunEnd}</definedName><definedName name="Typenliste">Listen!$F$2:$F$3</definedName></definedNames></workbook>`);
+ z.file('xl/_rels/workbook.xml.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>');
+ z.file('xl/styles.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="11"/><name val="Arial"/></font><font><b/><color rgb="FF050505"/><sz val="11"/><name val="Arial"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFF2B705"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="4"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="14" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="4" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>');
+ z.file('xl/worksheets/sheet1.xml',buildImportSheet());z.file('xl/worksheets/sheet2.xml',buildListSheet());
+ const blob=await z.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',compression:'DEFLATE'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Schussbuch-Importvorlage-'+new Date().toISOString().slice(0,10)+'.xlsx';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500)
+}
+function nodeText(node,name){let x=node?.getElementsByTagNameNS('*',name)?.[0];return x?.textContent??''}
+function excelSerialDate(n){let d=new Date(Date.UTC(1899,11,30)+Number(n)*86400000);return Number.isFinite(d.getTime())?d.toISOString().slice(0,10):''}
+function normalizeDate(v){if(v==null||v==='')return '';if(typeof v==='number'||/^\d{5}(\.\d+)?$/.test(String(v)))return excelSerialDate(Number(v));let s=String(v).trim(),m=s.match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})$/);if(m)return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);return m?`${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`:''}
+function asNumber(v){if(v==null||String(v).trim()==='')return null;let n=Number(String(v).replace(/\s/g,'').replace(',','.'));return Number.isFinite(n)?n:null}
+async function readExcelRows(file){
+ if(!window.JSZip)throw new Error('Excel-Funktion konnte nicht geladen werden.');
+ const zip=await JSZip.loadAsync(await file.arrayBuffer()),parser=new DOMParser();
+ const shared=[];if(zip.file('xl/sharedStrings.xml')){let sx=parser.parseFromString(await zip.file('xl/sharedStrings.xml').async('string'),'application/xml');for(const si of sx.getElementsByTagNameNS('*','si'))shared.push([...si.getElementsByTagNameNS('*','t')].map(x=>x.textContent||'').join(''))}
+ const wx=parser.parseFromString(await zip.file('xl/workbook.xml').async('string'),'application/xml'),rels=parser.parseFromString(await zip.file('xl/_rels/workbook.xml.rels').async('string'),'application/xml');let relMap={};for(const r of rels.getElementsByTagNameNS('*','Relationship'))relMap[r.getAttribute('Id')]=r.getAttribute('Target');
+ let target='',sheetNodes=[...wx.getElementsByTagNameNS('*','sheet')],chosen=sheetNodes.find(s=>s.getAttribute('name')==='Schussbucheinträge')||sheetNodes[0];if(chosen)target=relMap[chosen.getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships','id')||chosen.getAttribute('r:id')];if(!target)throw new Error('Kein Tabellenblatt gefunden.');target=target.replace(/^\//,'').replace(/^xl\//,'');let path='xl/'+target.replace(/^\.\//,'');
+ const sheetFile=zip.file(path);if(!sheetFile)throw new Error('Das Tabellenblatt konnte nicht gelesen werden.');const sx=parser.parseFromString(await sheetFile.async('string'),'application/xml'),out=[];
+ for(const row of sx.getElementsByTagNameNS('*','row')){let rn=Number(row.getAttribute('r')||0);if(rn===1)continue;let vals=Array(IMPORT_HEADERS.length).fill('');for(const c of row.getElementsByTagNameNS('*','c')){let ref=c.getAttribute('r')||'',letters=(ref.match(/[A-Z]+/)||[''])[0],idx=0;for(const ch of letters)idx=idx*26+ch.charCodeAt(0)-64;idx--;if(idx<0||idx>=vals.length)continue;let t=c.getAttribute('t'),v=nodeText(c,'v');if(t==='inlineStr')v=nodeText(c,'is');else if(t==='s')v=shared[Number(v)]??'';else if(t==='b')v=v==='1'?'Ja':'Nein';vals[idx]=v}
+  if(vals.some(v=>String(v).trim()!==''))out.push({rowNumber:rn,values:vals});
+ }
+ return out
+}
+function existingSignature(x){return [x.session_date,String(x.firearm_name||'').trim().toLocaleLowerCase('de'),Number(x.rounds||0),String(x.title||'').trim().toLocaleLowerCase('de'),String(x.location||'').trim().toLocaleLowerCase('de'),String(x.discipline||'').trim().toLocaleLowerCase('de'),String(x.division||'').trim().toLocaleLowerCase('de')].join('|')}
+function validateImportRows(raw){
+ const known=new Map(guns.map(g=>[String(g.name||'').trim().toLocaleLowerCase('de'),g])),seen=new Set(sessions.map(existingSignature));
+ return raw.map(({rowNumber,values:v})=>{let date=normalizeDate(v[0]),type=String(v[1]||'').trim(),weaponName=String(v[2]||'').trim(),gun=known.get(weaponName.toLocaleLowerCase('de')),caliber=String(v[3]||gun?.caliber||'').trim(),rounds=asNumber(v[4]),location=String(v[5]||'').trim(),title=String(v[6]||'').trim(),discipline=String(v[7]||'IPSC Handgun').trim(),division=String(v[8]||gun?.division||'').trim(),level=String(v[9]||'').trim(),placement=asNumber(v[10]),percent=asNumber(v[11]),cost=asNumber(v[12]),notes=String(v[13]||'').trim(),errors=[];
+  if(!date)errors.push('Datum ungültig');if(!['Training','Wettkampf'].includes(type))errors.push('Typ muss Training oder Wettkampf sein');if(!weaponName)errors.push('Waffe fehlt');if(!gun&&!caliber)errors.push('Kaliber für neue Waffe fehlt');if(rounds===null||!Number.isInteger(rounds)||rounds<0||rounds>10000)errors.push('Schusszahl ungültig');if(placement!==null&&(!Number.isInteger(placement)||placement<1))errors.push('Platzierung ungültig');if(percent!==null&&(percent<0||percent>100))errors.push('Ergebnis % ungültig');if(cost!==null&&cost<0)errors.push('Kosten ungültig');
+  const row={rowNumber,date,type,weaponName,gun,caliber,rounds,location,title,discipline,division,level,placement,percent,cost:cost??Number(gun?.cost_per_round||0),notes,errors,newGun:!gun,duplicate:false};let sig=[date,weaponName.toLocaleLowerCase('de'),Number(rounds||0),title.toLocaleLowerCase('de'),location.toLocaleLowerCase('de'),discipline.toLocaleLowerCase('de'),division.toLocaleLowerCase('de')].join('|');if(!errors.length&&seen.has(sig)){row.duplicate=true;errors.push('Bereits im Schussbuch oder doppelt in Datei')}else if(!errors.length)seen.add(sig);return row
+ })
+}
+function renderExcelReview(){let valid=pendingExcelImport.filter(x=>!x.errors.length),bad=pendingExcelImport.length-valid.length,newNames=new Set(valid.filter(x=>x.newGun).map(x=>x.weaponName.trim().toLocaleLowerCase('de')));$('excelSummary').innerHTML=`<div><b>${pendingExcelImport.length}</b><span>Zeilen gelesen</span></div><div><b>${valid.length}</b><span>Importierbar</span></div><div><b>${newNames.size}</b><span>Neue Waffen</span></div><div><b>${bad}</b><span>Nicht importiert</span></div>`;$('excelPreview').innerHTML=`<table class="importPreview"><thead><tr><th>Zeile</th><th>Datum</th><th>Typ</th><th>Waffe</th><th>Kaliber</th><th>Schuss</th><th>Status</th></tr></thead><tbody>${pendingExcelImport.map(x=>`<tr class="${x.errors.length?'error':x.newGun?'warning':''}"><td>${x.rowNumber}</td><td>${esc(x.date||'–')}</td><td>${esc(x.type||'–')}</td><td>${esc(x.weaponName||'–')}</td><td>${esc(x.caliber||'–')}</td><td>${x.rounds??'–'}</td><td>${x.errors.length?esc(x.errors.join(', ')):x.newGun?'Neue Waffe wird angelegt':'Bereit'}</td></tr>`).join('')}</tbody></table>`;$('excelReview').classList.remove('hidden');$('excelImport').disabled=!valid.length;$('excelImport').textContent=valid.length?`${valid.length} Einträge importieren`:'Keine gültigen Einträge'}
+async function importExcelRows(){
+ if(!navigator.onLine)return alert('Für den Excel-Import ist eine Internetverbindung erforderlich.');let rows=pendingExcelImport.filter(x=>!x.errors.length);if(!rows.length)return;const newGunGroups=new Map();rows.filter(x=>x.newGun).forEach(x=>{let key=x.weaponName.trim().toLocaleLowerCase('de');if(!newGunGroups.has(key))newGunGroups.set(key,x.weaponName.trim())});const newNames=[...newGunGroups.values()],question=`${rows.length} Einträge importieren${newNames.length?' und '+newNames.length+' neue Waffe(n) anlegen: '+newNames.join(', '):''}?`;if(!confirm(question))return;
+ const btn=$('excelImport'),msg=$('excelMsg');btn.disabled=true;msg.className='msg';msg.textContent='Import läuft…';let imported=[];
+ try{const {data:{user},error:userErr}=await sb.auth.getUser();if(userErr||!user)throw new Error('Keine gültige Anmeldung. Bitte neu anmelden.');let gunMap=new Map(guns.map(g=>[g.name.trim().toLocaleLowerCase('de'),g]));
+  for(const name of newNames){let nameKey=name.trim().toLocaleLowerCase('de'),matching=rows.filter(x=>x.newGun&&x.weaponName.trim().toLocaleLowerCase('de')===nameKey),calibers=[...new Set(matching.map(x=>x.caliber.trim().toLocaleLowerCase('de')))];if(calibers.length>1)throw new Error(`Für die neue Waffe „${name}“ wurden unterschiedliche Kaliber eingetragen.`);let first=matching[0],r=await sb.from('firearms').insert({user_id:user.id,name,caliber:first.caliber,division:first.division||null,cost_per_round:first.cost||0,cleaning_enabled:false,cleaning_interval:500,starting_rounds:0,cleaning_baseline_rounds:0}).select().single();if(r.error)throw new Error(`Waffe „${name}“: ${r.error.message}`);guns=[...guns,r.data].sort((a,b)=>a.name.localeCompare(b.name,'de'));gunMap.set(nameKey,r.data)}
+  const payload=rows.map(x=>{let g=gunMap.get(x.weaponName.trim().toLocaleLowerCase('de'));return {user_id:user.id,session_date:x.date,session_type:x.type,title:x.title||null,location:x.location||null,discipline:x.discipline||'IPSC Handgun',division:x.division||g?.division||null,firearm_id:g?.id||null,firearm_name:g?.name||x.weaponName,caliber:x.caliber||g?.caliber||null,rounds:x.rounds,match_level:x.level||null,placement:x.placement,result_percent:x.percent,notes:x.notes||null,cost_per_round:x.cost??Number(g?.cost_per_round||0)}});
+  for(let i=0;i<payload.length;i+=100){let r=await sb.from('sessions').insert(payload.slice(i,i+100)).select();if(r.error)throw new Error(`${imported.length} Einträge wurden übernommen, danach trat ein Fehler auf: ${r.error.message}`);imported.push(...(r.data||[]))}
+  sessions=[...imported,...sessions].sort((a,b)=>String(b.session_date).localeCompare(String(a.session_date)));loadVersion++;localSave();render();pendingExcelImport=[];$('excelReview').classList.add('hidden');$('excelFile').value='';msg.className='msg ok';msg.textContent=`${imported.length} Einträge erfolgreich importiert${newNames.length?' · '+newNames.length+' neue Waffe(n) angelegt':''} ✓`;
+ }catch(err){msg.className='msg';msg.textContent='Import fehlgeschlagen: '+(err?.message||String(err));await load()}finally{btn.disabled=false}
+}
+$('excelTemplate').onclick=async()=>{let msg=$('excelMsg');msg.className='msg';msg.textContent='Excel-Vorlage wird erstellt…';try{await makeExcelTemplate();msg.className='msg ok';msg.textContent=`Vorlage mit ${guns.filter(g=>gunStatus(g)==='owned').length} Waffe(n) im Bestand erstellt ✓`}catch(err){msg.textContent='Vorlage konnte nicht erstellt werden: '+err.message}};
+$('excelChoose').onclick=()=>$('excelFile').click();$('excelFile').onchange=async e=>{let f=e.target.files?.[0];if(!f)return;let msg=$('excelMsg');msg.className='msg';msg.textContent='Excel-Datei wird geprüft…';try{pendingExcelImport=validateImportRows(await readExcelRows(f));if(!pendingExcelImport.length)throw new Error('Keine ausgefüllten Datenzeilen gefunden.');renderExcelReview();msg.className='msg ok';msg.textContent='Prüfung abgeschlossen. Bitte kontrolliere die Vorschau.'}catch(err){pendingExcelImport=[];$('excelReview').classList.add('hidden');msg.textContent='Datei konnte nicht geprüft werden: '+err.message}e.target.value=''};
+$('excelImport').onclick=importExcelRows;$('excelCancel').onclick=()=>{pendingExcelImport=[];$('excelReview').classList.add('hidden');$('excelMsg').textContent=''};
+
+window.addEventListener('online',async()=>{await syncQueue();await load()});window.addEventListener('offline',updateLocalStatus);
+window.addEventListener('pageshow',()=>{if(currentUserId&&navigator.onLine)load()});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&currentUserId&&navigator.onLine)load()});
+$('syncNow').onclick=async()=>{await syncQueue();await load();updateLocalStatus()};
+$('localBackup').onclick=()=>{let x=localStorage.getItem(localKey())||'{}';download('schussbuch-lokal-backup-'+new Date().toISOString().slice(0,10)+'.json','application/json',x)}; $('restoreBackup').onclick=()=>$('restoreFile').click(); $('restoreFile').onchange=async e=>{let f=e.target.files?.[0];if(!f)return;try{let x=JSON.parse(await f.text());if(!Array.isArray(x.sessions)||!Array.isArray(x.guns))throw new Error('Ungültiges Backup');localStorage.setItem(localKey(),JSON.stringify({...x,saved_at:new Date().toISOString()}));localLoad();alert('Lokales Backup geladen. Die Cloud wurde dabei nicht überschrieben.')}catch(err){alert('Backup konnte nicht geladen werden: '+err.message)}e.target.value=''};
+$('pdfBtn').onclick=()=>{view('log');setTimeout(()=>window.print(),100)};
+</script><script src="app-update.js" defer></script></body></html>
