@@ -205,8 +205,8 @@ async function refreshGunCard(){
   const uid=currentUserId;if(!uid)return;
   const [a,b,c,d]=await Promise.all([
    sb.from('firearms').select('*').eq('user_id',uid).order('name'),
-   sb.from('sessions').select('firearm_id,rounds,cost_per_round,session_type').eq('user_id',uid),
-   sb.from('cleaning_events').select('firearm_id,cleaned_at,rounds_at_cleaning').eq('user_id',uid).order('cleaned_at',{ascending:false}),
+   sb.from('sessions').select('*').eq('user_id',uid),
+   sb.from('cleaning_events').select('*').eq('user_id',uid).order('cleaned_at',{ascending:false}),
    sb.from('firearm_expenses').select('firearm_id,amount,category').eq('user_id',uid)
   ]);
   for(const r of [a,b,c,d])if(r.error)throw r.error;
