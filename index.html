@@ -195,8 +195,8 @@ let cardPhotoUrl='',cardPhotoPath='',cardExpenses=[];
 function renderGunCardSelect(){
  const el=$('cardGunSelect');if(!el)return;
  const previous=el.value;
- el.innerHTML='<option value="">Waffe auswählen</option>'+guns.map(g=>'<option value="'+Number(g.id)+'">'+esc(g.name)+' · '+esc(g.caliber)+' · '+esc(statusLabel(g))+'</option>').join('');
- el.value=guns.some(g=>String(g.id)===previous)?previous:(guns[0]?String(guns[0].id):'');
+ el.innerHTML='<option value="">Waffe auswählen</option>'+guns.filter(g=>gunStatus(g)==='owned').map(g=>'<option value="'+Number(g.id)+'">'+esc(g.name)+' · '+esc(g.caliber)+'</option>').join('');
+ el.value=guns.some(g=>String(g.id)===previous&&gunStatus(g)==='owned')?previous:(guns.find(g=>gunStatus(g)==='owned')?String(guns.find(g=>gunStatus(g)==='owned').id):'');
  void renderGunCard();
 }
 async function refreshGunCard(){
