@@ -1,4 +1,4 @@
-const C='schussbuch-v461-match-results',A=['./','index.html','manifest.webmanifest','icons/ipsc-logo.png','vendor/jszip.min.js','authority.js','match-results.js','expenses.js','app-update.js','vendor/pdf-lib.min.js','vendor/fontkit.umd.min.js','vendor/DejaVuSans.ttf'];
+const C='schussbuch-v462-compact-book',A=['./','index.html','manifest.webmanifest','icons/ipsc-logo.png','vendor/jszip.min.js','authority.js','match-results.js','expenses.js','app-update.js','vendor/pdf-lib.min.js','vendor/fontkit.umd.min.js','vendor/DejaVuSans.ttf'];
 const staticURLs=new Set(A.map(path=>new URL(path,self.registration.scope).href));
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(C).then(cache=>cache.addAll(A)).then(()=>self.skipWaiting()));

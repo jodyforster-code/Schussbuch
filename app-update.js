@@ -1,6 +1,6 @@
 // Version checks never reload a form or change its contents automatically.
 (() => {
-  const currentVersion = '4.6.1';
+  const currentVersion = '4.6.2';
   let checking = false, registration;
   const base = new URL('.', document.currentScript.src);
   const banner = document.createElement('aside');
