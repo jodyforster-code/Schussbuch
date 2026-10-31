@@ -1,3 +1,4 @@
+import {collectYearResults} from './match-results.js';
 const BUCKET='sports-certificates';
 
 // Match the Schussbuch: newest entries first, with a stable order on each date.
@@ -6,7 +7,7 @@ export function yearRows(rows,year){
   .sort((a,b)=>String(b.session_date).localeCompare(String(a.session_date))||String(a.id).localeCompare(String(b.id)));
 }
 
-export async function buildAuthorityPdf({proof,year,rows,profile,fontBytes}){
+export async function buildAuthorityPdf({proof,year,rows,profile,fontBytes,attachments=[]}){
  const {PDFDocument,rgb}=globalThis.PDFLib;
  const source=await PDFDocument.load(proof);
  if(!source.getPageCount())throw Error('Der Nachweis enthält keine Seiten.');
@@ -73,6 +74,7 @@ export async function buildAuthorityPdf({proof,year,rows,profile,fontBytes}){
  draw(`${trainings} Trainingseinträge  |  ${matches} Wettkampfeinträge  |  ${rounds.toLocaleString('de-AT')} Schuss`,margin,summaryY,10.5);
  draw('Anlagen',margin,summaryY-34,10.5,muted);
  draw('Sportschützennachweis und Schussbuch des gewählten Jahres',margin,summaryY-53,10.5);
+ if(attachments.length)draw(attachments.length+' Ergebnis-PDF(s) als Wettkampf-Anhang',margin,summaryY-72,10.5);
  draw('Erstellt am '+created,margin,80,10,muted);
 
  // Keep every uploaded certificate page intact, immediately after the cover.
@@ -139,6 +141,14 @@ export async function buildAuthorityPdf({proof,year,rows,profile,fontBytes}){
   }
  }
  frameTable();
+ // Append complete originals after the book; separator identifies the competition.
+ for(const attachment of attachments){
+  const original=await PDFDocument.load(attachment.bytes);
+  if(!original.getPageCount())throw Error('Ergebnis-PDF enthält keine Seiten: '+attachment.name);
+  addPage();y=H-65;wrapped('WETTKAMPF-ERGEBNIS',12,20);y-=25;
+  wrapped(attachment.title,24,30);y-=15;wrapped(attachment.date,14,20);y-=20;wrapped(attachment.name,11,16);
+  for(const copied of await doc.copyPages(original,original.getPageIndices()))doc.addPage(copied);
+ }
  const pages=doc.getPages(),count=pages.length;
  for(const generated of generatedPages){
   page=generated;
@@ -157,17 +167,19 @@ export function initAuthority({sb,getUserId,getQueue}){
  const selectedYear=()=>{const n=Number($('authorityYear').value);if(!Number.isInteger(n)||n<1900||n>2100)throw Error('Bitte ein Jahr zwischen 1900 und 2100 wählen.');return n};
  const message=(t,ok=false)=>{$('authorityMsg').className='msg'+(ok?' ok':'');$('authorityMsg').textContent=t};
  function clearDownload(){if(downloadUrl)URL.revokeObjectURL(downloadUrl);downloadUrl=null;$('authorityDownload').classList.add('hidden');$('authorityDownload').removeAttribute('href')}
- function reset(){revision++;clearDownload();$('proofFile').value='';$('proofStatus').textContent='';message('');}
+ function reset(){revision++;clearDownload();$('proofFile').value='';$('includeMatchResults').checked=false;$('proofStatus').textContent='';message('');}
  function checkUser(uid){if(!uid||uid!==getUserId())throw Error('Die Anmeldung hat sich geändert. Bitte erneut versuchen.');}
  async function listProof(uid,year){const r=await bucket().list(uid,{search:year+'.pdf',limit:100});if(r.error)throw r.error;return (r.data||[]).find(f=>f.name===year+'.pdf')}
  async function refresh(){const rev=++revision,uid=getUserId();clearDownload();$('proofStatus').textContent='Nachweis wird geprüft…';try{const year=selectedYear(),f=await listProof(uid,year);if(rev!==revision||uid!==getUserId())return;$('proofStatus').textContent=f?`Nachweis ${year} vorhanden · gespeichert am ${new Date(f.updated_at||f.created_at).toLocaleDateString('de-AT')}`:`Für ${year} ist noch kein Nachweis hinterlegt.`}catch(e){if(rev===revision)$('proofStatus').textContent='Nachweis konnte nicht geladen werden: '+e.message}}
- async function action(fn){if(busy)return;busy=true;for(const id of ['uploadProof','viewProof','deleteProof','authorityCreate','authorityYear','proofFile'])$(id).disabled=true;clearDownload();try{await fn()}catch(e){message(e.message||'Vorgang fehlgeschlagen.')}finally{busy=false;for(const id of ['uploadProof','viewProof','deleteProof','authorityCreate','authorityYear','proofFile'])$(id).disabled=false}}
+ async function action(fn){if(busy)return;busy=true;for(const id of ['uploadProof','viewProof','deleteProof','authorityCreate','authorityYear','proofFile','includeMatchResults'])$(id).disabled=true;clearDownload();try{await fn()}catch(e){message(e.message||'Vorgang fehlgeschlagen.')}finally{busy=false;for(const id of ['uploadProof','viewProof','deleteProof','authorityCreate','authorityYear','proofFile','includeMatchResults'])$(id).disabled=false}}
  function offer(blob,name){clearDownload();downloadUrl=URL.createObjectURL(blob);const a=$('authorityDownload');a.href=downloadUrl;a.download=name;a.textContent=name+' herunterladen';a.classList.remove('hidden');a.click()}
+ $('includeMatchResults').onchange=()=>{clearDownload();message('')};
  $('authorityYear').value=new Date().getFullYear();$('authorityYear').onchange=()=>{message('');void refresh()};
  $('uploadProof').onclick=()=>action(async()=>{const uid=getUserId(),year=selectedYear(),f=$('proofFile').files[0];checkUser(uid);if(!f)throw Error('Bitte zuerst eine PDF-Datei auswählen.');if(f.size>10485760)throw Error('Die PDF darf höchstens 10 MB groß sein.');message('PDF wird geprüft…');let bytes=await f.arrayBuffer(),doc;try{doc=await globalThis.PDFLib.PDFDocument.load(bytes)}catch{throw Error('Bitte eine gültige, nicht passwortgeschützte PDF hochladen.')}if(!doc.getPageCount())throw Error('Die PDF enthält keine Seiten.');const existing=await listProof(uid,year);checkUser(uid);if(existing&&!confirm(`Den vorhandenen Nachweis für ${year} durch „${f.name}“ ersetzen?`))return;checkUser(uid);message('Nachweis wird gespeichert…');const r=await bucket().upload(`${uid}/${year}.pdf`,bytes,{contentType:'application/pdf',upsert:true,cacheControl:'0'});if(r.error)throw r.error;checkUser(uid);$('proofFile').value='';await refresh();message(`Nachweis für ${year} gespeichert (${doc.getPageCount()} Seite(n)).`,true)});
  async function getProof(uid,year){const r=await bucket().download(`${uid}/${year}.pdf`);if(r.error)throw Error(`Nachweis für ${year} nicht verfügbar. Bitte zuerst hochladen oder die Verbindung prüfen.`);return r.data}
  $('viewProof').onclick=()=>action(async()=>{const uid=getUserId(),year=selectedYear();const blob=await getProof(uid,year);checkUser(uid);offer(blob,`Sportschuetzennachweis-${year}.pdf`);message('Nachweis bereit.',true)});
  $('deleteProof').onclick=()=>action(async()=>{const uid=getUserId(),year=selectedYear();if(!confirm(`Nachweis für ${year} wirklich löschen?`))return;checkUser(uid);const r=await bucket().remove([`${uid}/${year}.pdf`]);if(r.error)throw r.error;checkUser(uid);await refresh();message('Nachweis gelöscht.',true)});
- $('authorityCreate').onclick=()=>action(async()=>{const uid=getUserId(),year=selectedYear();checkUser(uid);if(!navigator.onLine)throw Error('Für ein vollständiges Behördendokument bitte online verbinden.');if(getQueue().some(x=>String(x.row?.session_date).slice(0,4)===String(year)))throw Error('Es gibt noch nicht synchronisierte Einträge für dieses Jahr. Bitte unter Daten & Sync zuerst synchronisieren.');message('Nachweis und sämtliche Jahreseinträge werden geladen…');const proof=await getProof(uid,year);checkUser(uid);const p=await sb.from('profiles').select('*').eq('user_id',uid).maybeSingle();if(p.error)throw p.error;if(!p.data?.full_name?.trim())throw Error('Bitte zuerst deinen Namen im Profil speichern.');if(!p.data.wbk_number?.trim())throw Error('Bitte zuerst deine WBK-Nummer im Profil speichern.');let rows=[],offset=0;for(;;){const r=await sb.from('sessions').select('*').eq('user_id',uid).gte('session_date',`${year}-01-01`).lt('session_date',`${year+1}-01-01`).order('session_date').order('id').range(offset,offset+499);if(r.error)throw r.error;checkUser(uid);rows.push(...r.data);if(r.data.length<500)break;offset+=500;}if(!rows.length&&!confirm(`Für ${year} sind keine Einträge vorhanden. Trotzdem ein Dokument mit Leerhinweis erstellen?`))return;const f=await fetch('vendor/DejaVuSans.ttf');if(!f.ok)throw Error('Die PDF-Schrift konnte nicht geladen werden.');const bytes=await buildAuthorityPdf({proof:await proof.arrayBuffer(),year,rows,profile:p.data,fontBytes:await f.arrayBuffer()});checkUser(uid);offer(new Blob([bytes],{type:'application/pdf'}),`Behoerdendokument-${year}.pdf`);message(`Behördendokument ${year} mit ${rows.length} Einträgen erstellt. Falls der Download nicht startet, den Link darunter antippen.`,true)});
+ $('authorityCreate').onclick=()=>action(async()=>{const uid=getUserId(),year=selectedYear();checkUser(uid);if(!navigator.onLine)throw Error('Für ein vollständiges Behördendokument bitte online verbinden.');if(getQueue().some(x=>String(x.row?.session_date).slice(0,4)===String(year)))throw Error('Es gibt noch nicht synchronisierte Einträge für dieses Jahr. Bitte unter Daten & Sync zuerst synchronisieren.');message('Nachweis und sämtliche Jahreseinträge werden geladen…');const proof=await getProof(uid,year);checkUser(uid);const p=await sb.from('profiles').select('*').eq('user_id',uid).maybeSingle();if(p.error)throw p.error;if(!p.data?.full_name?.trim())throw Error('Bitte zuerst deinen Namen im Profil speichern.');if(!p.data.wbk_number?.trim())throw Error('Bitte zuerst deine WBK-Nummer im Profil speichern.');let rows=[],offset=0;for(;;){const r=await sb.from('sessions').select('*').eq('user_id',uid).gte('session_date',`${year}-01-01`).lt('session_date',`${year+1}-01-01`).order('session_date').order('id').range(offset,offset+499);if(r.error)throw r.error;checkUser(uid);rows.push(...r.data);if(r.data.length<500)break;offset+=500;}if(!rows.length&&!confirm(`Für ${year} sind keine Einträge vorhanden. Trotzdem ein Dokument mit Leerhinweis erstellen?`))return;const attachments=$('includeMatchResults').checked?await collectYearResults({sb,uid,rows,year,checkUser,progress:message}):[];checkUser(uid);const f=await fetch('vendor/DejaVuSans.ttf');if(!f.ok)throw Error('Die PDF-Schrift konnte nicht geladen werden.');const bytes=await buildAuthorityPdf({proof:await proof.arrayBuffer(),year,rows,profile:p.data,fontBytes:await f.arrayBuffer(),attachments});checkUser(uid);offer(new Blob([bytes],{type:'application/pdf'}),`Behoerdendokument-${year}.pdf`);message(`Behördendokument ${year} mit ${rows.length} Einträgen und ${attachments.length} Ergebnis-PDF(s) erstellt. Falls der Download nicht startet, den Link darunter antippen.`,true)});
  return {refresh,reset};
 }
+
